@@ -1,0 +1,56 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  font-size: 1.125rem;
+  line-height: 1.5;
+  color: #1b1b1b;
+  background: #ffffff;
+}
+
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.field {
+  margin-block: 1.25rem;
+}
+
+label {
+  display: block;
+  font-weight: 600;
+}
+
+.hint {
+  margin: 0.25rem 0;
+  color: #444444;
+}
+
+input,
+select,
+textarea {
+  box-sizing: border-box;
+  width: 100%;
+  margin-top: 0.25rem;
+  padding: 0.5rem;
+  font: inherit;
+  border: 2px solid #5c5c5c;
+  border-radius: 4px;
+}
+
+button {
+  padding: 0.6rem 1.5rem;
+  font: inherit;
+  font-weight: 600;
+  color: #ffffff;
+  background: #0b5cab;
+  border: 2px solid #0b5cab;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+:focus-visible {
+  outline: 3px solid #0b5cab;
+  outline-offset: 2px;
+}

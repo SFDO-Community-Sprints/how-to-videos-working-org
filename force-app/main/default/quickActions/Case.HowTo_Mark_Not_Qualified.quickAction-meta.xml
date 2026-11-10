@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >How-To Videos triage: closes the request as Not Qualified with a reason. Saving it emails the reason to the requester.</description>
+    <fieldOverrides>
+        <field>Status</field>
+        <literalValue>Not Qualified</literalValue>
+    </fieldOverrides>
+    <label>Mark Not Qualified</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <quickActionLayout>
+        <layoutSectionStyle>TwoColumnsLeftToRight</layoutSectionStyle>
+        <quickActionLayoutColumns>
+            <quickActionLayoutItems>
+                <emptySpace>false</emptySpace>
+                <field>HowTo_Not_Qualified_Reason__c</field>
+                <uiBehavior>Required</uiBehavior>
+            </quickActionLayoutItems>
+        </quickActionLayoutColumns>
+        <quickActionLayoutColumns />
+    </quickActionLayout>
+    <type>Update</type>
+</QuickAction>
