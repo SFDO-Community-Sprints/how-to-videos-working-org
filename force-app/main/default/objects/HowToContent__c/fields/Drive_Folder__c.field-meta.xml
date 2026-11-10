@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Drive_Folder__c</fullName>
+    <description
+  >The shared folder that holds this content&apos;s raw materials. Required in Production, Editing, and Final Review.</description>
+    <inlineHelpText
+  >Link to the shared folder for this content. Required from Production through Final Review.</inlineHelpText>
+    <label>Drive Folder</label>
+    <required>false</required>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Url</type>
+</CustomField>

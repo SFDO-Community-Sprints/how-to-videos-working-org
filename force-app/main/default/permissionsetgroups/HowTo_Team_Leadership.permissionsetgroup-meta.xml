@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >How-To Videos: Team Leadership. A team member who also accepts and declines ideas and can see who voted.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>How-To Team Leadership</label>
+    <permissionSets>HowTo_Leadership_Access</permissionSets>
+    <permissionSets>HowTo_Member_Access</permissionSets>
+    <status>Updated</status>
+</PermissionSetGroup>

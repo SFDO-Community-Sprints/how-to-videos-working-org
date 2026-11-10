@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HowTo_Video_Request</fullName>
+    <active>true</active>
+    <businessProcess>HowTo_Video_Request</businessProcess>
+    <description
+  >How-To Videos: one person&apos;s ask for how-to content, or their report of a problem with existing content.</description>
+    <label>Video Request</label>
+    <picklistValues>
+        <picklist>HowTo_Product__c</picklist>
+        <values>
+            <fullName>Agentforce Nonprofit</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Nonprofit Success Pack</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Other</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Outbound Funds Module</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Program Management Module</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Salesforce Platform</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Volunteers for Salesforce</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Origin</picklist>
+        <values>
+            <fullName>Comms</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Community</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Import</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Internal</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Priority</picklist>
+        <values>
+            <fullName>High</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Low</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Medium</fullName>
+            <default>true</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Reason</picklist>
+        <values>
+            <fullName>Complex functionality</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Existing problem</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Instructions not clear</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>New problem</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>User didn%27t attend training</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Type</picklist>
+        <values>
+            <fullName>New content</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Problem with existing content</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

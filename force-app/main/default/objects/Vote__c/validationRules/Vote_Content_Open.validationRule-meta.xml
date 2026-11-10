@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Vote_Content_Open</fullName>
+    <active>true</active>
+    <description
+  >Declined content stops taking votes. Voting stays open after an idea is accepted, until the content is published (team decision 3, default).</description>
+    <errorConditionFormula
+  >AND(ISNEW(), OR(ISPICKVAL(Content__r.Status__c, &quot;Declined&quot;), ISPICKVAL(Content__r.Status__c, &quot;Published&quot;), ISPICKVAL(Content__r.Status__c, &quot;Retired&quot;)))</errorConditionFormula>
+    <errorMessage>Voting is closed for this content.</errorMessage>
+</ValidationRule>

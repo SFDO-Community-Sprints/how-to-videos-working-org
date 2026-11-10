@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Content_Team_Response_Required</fullName>
+    <active>true</active>
+    <description>A team response is required to decline an idea.</description>
+    <errorConditionFormula
+  >AND(ISPICKVAL(Status__c, &quot;Declined&quot;), ISBLANK(Team_Response__c))</errorConditionFormula>
+    <errorDisplayField>Team_Response__c</errorDisplayField>
+    <errorMessage
+  >Enter the team response before declining the idea.</errorMessage>
+</ValidationRule>

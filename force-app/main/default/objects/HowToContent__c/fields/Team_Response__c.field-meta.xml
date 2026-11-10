@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Team_Response__c</fullName>
+    <description
+  >The team&apos;s reply on an idea that it declines. Required to decline.</description>
+    <inlineHelpText
+  >The team&apos;s reply on an idea it declines. Required to decline.</inlineHelpText>
+    <label>Team Response</label>
+    <length>5000</length>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

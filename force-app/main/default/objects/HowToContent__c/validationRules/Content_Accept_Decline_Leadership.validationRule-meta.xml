@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Content_Accept_Decline_Leadership</fullName>
+    <active>true</active>
+    <description
+  >Only Team Leadership (custom permission HowTo_Decide_Ideas) can set content to Accepted or Declined.</description>
+    <errorConditionFormula
+  >AND(OR(ISNEW(), ISCHANGED(Status__c)), OR(ISPICKVAL(Status__c, &quot;Accepted&quot;), ISPICKVAL(Status__c, &quot;Declined&quot;)), NOT($Permission.HowTo_Decide_Ideas))</errorConditionFormula>
+    <errorDisplayField>Status__c</errorDisplayField>
+    <errorMessage
+  >Only Team Leadership can accept or decline an idea.</errorMessage>
+</ValidationRule>

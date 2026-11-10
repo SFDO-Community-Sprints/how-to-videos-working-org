@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Content_Published_Date_Required</fullName>
+    <active>true</active>
+    <description
+  >Published Date is required when content is Published or Retired.</description>
+    <errorConditionFormula
+  >AND(OR(ISPICKVAL(Status__c, &quot;Published&quot;), ISPICKVAL(Status__c, &quot;Retired&quot;)), ISBLANK(Published_Date__c))</errorConditionFormula>
+    <errorDisplayField>Published_Date__c</errorDisplayField>
+    <errorMessage>Enter the published date.</errorMessage>
+</ValidationRule>

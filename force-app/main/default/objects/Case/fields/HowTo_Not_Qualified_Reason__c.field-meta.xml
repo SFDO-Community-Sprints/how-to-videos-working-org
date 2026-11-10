@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HowTo_Not_Qualified_Reason__c</fullName>
+    <description
+  >How-To Videos: why the request is not qualified. Required when Status is Not Qualified. Sent to the requester.</description>
+    <inlineHelpText
+  >Why this request is not qualified. The requester receives this text by email.</inlineHelpText>
+    <label>Not Qualified Reason</label>
+    <length>2000</length>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>LongTextArea</type>
+    <visibleLines>4</visibleLines>
+</CustomField>

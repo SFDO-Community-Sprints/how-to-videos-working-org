@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HowTo_Content_Awaiting_Holder_HowToContent</fullName>
+    <filterScope>Queue</filterScope>
+    <label>Content Awaiting a Holder</label>
+    <queue>HowTo_Content_Awaiting_Holder</queue>
+    <sharedTo>
+        <allInternalUsers />
+    </sharedTo>
+</ListView>

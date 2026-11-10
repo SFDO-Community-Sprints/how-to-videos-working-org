@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HowTo_Request_Status_Allowed</fullName>
+    <active>true</active>
+    <description
+  >How-To Videos: the record type limits the Status picklist on screen only. This rule holds a Video Request to its three statuses for Apex and the API too.</description>
+    <errorConditionFormula
+  >AND(RecordType.DeveloperName = &quot;HowTo_Video_Request&quot;, NOT(OR(ISPICKVAL(Status, &quot;New&quot;), ISPICKVAL(Status, &quot;Qualified&quot;), ISPICKVAL(Status, &quot;Not Qualified&quot;))))</errorConditionFormula>
+    <errorDisplayField>Status</errorDisplayField>
+    <errorMessage
+  >A request&apos;s status must be New, Qualified, or Not Qualified.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HowTo_Content__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <description
+  >How-To Videos: the content this request is linked to. A request is Qualified if and only if it points to content. Restrict stops content that requests point to from being deleted.</description>
+    <inlineHelpText
+  >The content this request is linked to. Set at triage.</inlineHelpText>
+    <label>Content</label>
+    <referenceTo>HowToContent__c</referenceTo>
+    <relationshipLabel>Requests</relationshipLabel>
+    <relationshipName>HowTo_Requests</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackHistory>false</trackHistory>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

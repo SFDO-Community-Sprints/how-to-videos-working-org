@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Content_Champion_Required</fullName>
+    <active>true</active>
+    <description
+  >A champion name and email are required from Accepted onward.</description>
+    <errorConditionFormula
+  >AND(CASE(TEXT(Status__c), &quot;Submitted&quot;, 1, &quot;Accepted&quot;, 2, &quot;Drafting&quot;, 3, &quot;Proofing&quot;, 4, &quot;Production&quot;, 5, &quot;Editing&quot;, 6, &quot;Final Review&quot;, 7, &quot;Published&quot;, 8, &quot;Retired&quot;, 9, 0) &gt;= 2, OR(ISBLANK(Champion_Name__c), ISBLANK(Champion_Email__c)))</errorConditionFormula>
+    <errorDisplayField>Champion_Name__c</errorDisplayField>
+    <errorMessage
+  >Enter the champion&apos;s name and email before the idea is accepted.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<PermissionSetGroup xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >How-To Videos: the Queue Manager. A team member who also triages requests, runs the duplicate check prompt template, and sets Queue Position.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>How-To Queue Manager</label>
+    <permissionSets>HowTo_Member_Access</permissionSets>
+    <permissionSets>HowTo_Queue_Manager_Access</permissionSets>
+    <status>Updated</status>
+</PermissionSetGroup>

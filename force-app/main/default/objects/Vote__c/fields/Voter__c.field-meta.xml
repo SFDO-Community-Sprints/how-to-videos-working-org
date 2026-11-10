@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Voter__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <description
+  >The person who cast the vote. A lookup to User cannot be required, so Vote_Key_Matches rejects a vote without a voter.</description>
+    <label>Voter</label>
+    <referenceTo>User</referenceTo>
+    <relationshipName>HowTo_Votes</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

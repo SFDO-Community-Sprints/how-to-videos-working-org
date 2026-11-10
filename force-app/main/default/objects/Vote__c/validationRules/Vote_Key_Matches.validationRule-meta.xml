@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Vote_Key_Matches</fullName>
+    <active>true</active>
+    <description
+  >The voter key must be the content ID followed by the voter&apos;s user ID, both 18 characters (ADR 0003). A vote must name its voter.</description>
+    <errorConditionFormula
+  >ISBLANK(Voter__c) || Voter_Key__c &lt;&gt; CASESAFEID(Content__c) &amp; CASESAFEID(Voter__c)</errorConditionFormula>
+    <errorDisplayField>Voter_Key__c</errorDisplayField>
+    <errorMessage
+  >The voter key must be the content ID followed by the voter&apos;s user ID.</errorMessage>
+</ValidationRule>

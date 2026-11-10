@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Voter_Key__c</fullName>
+    <caseSensitive>false</caseSensitive>
+    <description
+  >The 18-character content ID followed by the 18-character voter user ID. Required and unique, so the database refuses a second vote by one person on one idea. A validation rule rejects any other key. Writers upsert on this key.</description>
+    <externalId>true</externalId>
+    <label>Voter Key</label>
+    <length>36</length>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Text</type>
+    <unique>true</unique>
+</CustomField>
