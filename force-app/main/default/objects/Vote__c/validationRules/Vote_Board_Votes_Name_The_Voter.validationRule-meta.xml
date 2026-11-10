@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Vote_Board_Votes_Name_The_Voter</fullName>
+    <active>true</active>
+    <description
+  >A vote cast on the voting board names the user who cast it.</description>
+    <errorConditionFormula
+  >AND(ISPICKVAL(Source__c, &quot;Voting Board&quot;), ISBLANK(Voter__c))</errorConditionFormula>
+    <errorDisplayField>Voter__c</errorDisplayField>
+    <errorMessage
+  >A vote from the voting board must name its voter.</errorMessage>
+</ValidationRule>

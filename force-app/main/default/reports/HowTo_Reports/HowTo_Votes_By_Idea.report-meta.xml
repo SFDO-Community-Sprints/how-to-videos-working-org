@@ -4,7 +4,10 @@
         <field>HowToContent__c.Status__c</field>
     </columns>
     <columns>
-        <field>Vote__c.Voter__c</field>
+        <field>Vote__c.Voter_Email__c</field>
+    </columns>
+    <columns>
+        <field>Vote__c.Source__c</field>
     </columns>
     <columns>
         <field>CHILD_CREATED_DATE</field>

@@ -75,11 +75,6 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>HowToContent__c.Request_Count__c</field>
-        <readable>true</readable>
-    </fieldPermissions>
-    <fieldPermissions>
         <editable>true</editable>
         <field>HowToContent__c.Scratch_Track_Collected__c</field>
         <readable>true</readable>
@@ -104,6 +99,12 @@
         <field>HowToContent__c.Vote_Count__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <flowAccesses>
+        <enabled>true</enabled>
+        <flow>
+HowTo_Submit_Idea;
+    </flow>
+    </flowAccesses>
     <hasActivationRequired>false</hasActivationRequired>
     <label>How-To Team Member Access</label>
     <objectPermissions>

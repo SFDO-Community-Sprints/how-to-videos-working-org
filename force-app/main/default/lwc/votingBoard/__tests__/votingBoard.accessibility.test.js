@@ -54,6 +54,16 @@ describe("c-voting-board accessibility", () => {
     await expect(element).toBeAccessible();
   });
 
+  it("is accessible with the Submit an idea form open", async () => {
+    getIdeas.mockResolvedValue(ideas());
+    const element = await render();
+    [...element.shadowRoot.querySelectorAll("button")]
+      .find((b) => b.textContent.trim() === "Submit an idea")
+      .click();
+    await flush();
+    await expect(element).toBeAccessible();
+  });
+
   it("is accessible with no ideas", async () => {
     getIdeas.mockResolvedValue([]);
     const element = await render();

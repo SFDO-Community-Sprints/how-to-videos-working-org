@@ -38,6 +38,10 @@ const titles = (element) =>
   [...root(element).querySelectorAll("li h3")].map(text);
 const announcement = (element) =>
   text(root(element).querySelector('[role="status"]'));
+const submitButton = (element) =>
+  [...root(element).querySelectorAll("button")].find(
+    (b) => text(b) === "Submit an idea"
+  );
 const refreshButton = (element) =>
   [...root(element).querySelectorAll("button")].find(
     (b) => text(b) === "Refresh ideas"
@@ -59,11 +63,14 @@ describe("c-voting-board", () => {
     const element = await render();
     expect(titles(element)).toEqual([
       "Recurring donations",
-      "Volunteer shifts"
+      "Volunteer shifts",
+      "Grant reports"
     ]);
     expect([...root(element).querySelectorAll("li p")].map(text)).toEqual([
-      "1 vote, 2 requests, Nonprofit Success Pack",
-      "0 votes, 1 request"
+      "1 vote, Nonprofit Success Pack",
+      "0 votes",
+      "2 votes",
+      "Your request counts as your vote."
     ]);
     expect(buttons(element).map(text)).toEqual([
       "Vote for Recurring donations",
@@ -91,10 +98,11 @@ describe("c-voting-board", () => {
     expect(text(button)).toBe("Withdraw vote for Recurring donations");
     expect(titles(element)).toEqual([
       "Recurring donations",
-      "Volunteer shifts"
+      "Volunteer shifts",
+      "Grant reports"
     ]);
     expect(text(root(element).querySelector("li p"))).toBe(
-      "5 votes, 2 requests, Nonprofit Success Pack"
+      "5 votes, Nonprofit Success Pack"
     );
   });
 
@@ -161,10 +169,15 @@ describe("c-voting-board", () => {
     await flush();
     expect(titles(element)).toEqual([
       "Recurring donations",
-      "Volunteer shifts"
+      "Volunteer shifts",
+      "Grant reports"
     ]);
 
-    getIdeas.mockResolvedValue([{ ...ideas()[1], votes: 9 }, ideas()[0]]);
+    getIdeas.mockResolvedValue([
+      { ...ideas()[1], votes: 9 },
+      ideas()[0],
+      ideas()[2]
+    ]);
     refreshButton(element).click();
     await flush();
     await flush();
@@ -172,9 +185,10 @@ describe("c-voting-board", () => {
     expect(getIdeas).toHaveBeenCalledTimes(2);
     expect(titles(element)).toEqual([
       "Volunteer shifts",
-      "Recurring donations"
+      "Recurring donations",
+      "Grant reports"
     ]);
-    expect(announcement(element)).toBe("Ideas refreshed. 2 ideas.");
+    expect(announcement(element)).toBe("Ideas refreshed. 3 ideas.");
   });
 
   it("announces a second identical refresh too", async () => {
@@ -189,6 +203,66 @@ describe("c-voting-board", () => {
     const second = root(element).querySelector('[role="status"]').textContent;
     expect(second).not.toBe(first);
     expect(second.trim()).toBe(first.trim());
+  });
+
+  it("shows no button for a vote that came from the person's own request", async () => {
+    const element = await render();
+    expect(buttons(element).map(text)).toEqual([
+      "Vote for Recurring donations",
+      "Withdraw vote for Volunteer shifts"
+    ]);
+    const items = [...root(element).querySelectorAll("li")];
+    expect(text(items[2])).toContain("Your request counts as your vote.");
+  });
+
+  it("opens Submit an idea in place, with focus on its heading", async () => {
+    const element = await render();
+    const submit = submitButton(element);
+    expect(submit.getAttribute("aria-expanded")).toBe("false");
+    expect(root(element).querySelector("lightning-flow")).toBeNull();
+
+    submit.click();
+    await flush();
+
+    expect(submit.getAttribute("aria-expanded")).toBe("true");
+    expect(root(element).querySelector("lightning-flow").flowApiName).toBe(
+      "HowTo_Submit_Idea"
+    );
+    expect(root(element).activeElement).toBe(
+      root(element).querySelector("section h3")
+    );
+  });
+
+  it("closes the form when the flow finishes, announces it, and returns focus", async () => {
+    const element = await render();
+    submitButton(element).click();
+    await flush();
+
+    root(element)
+      .querySelector("lightning-flow")
+      .dispatchEvent(
+        new CustomEvent("statuschange", { detail: { status: "FINISHED" } })
+      );
+    await flush();
+
+    expect(root(element).querySelector("lightning-flow")).toBeNull();
+    expect(announcement(element)).toBe(
+      "Your idea was sent to the Triage Queue."
+    );
+    expect(root(element).activeElement).toBe(submitButton(element));
+    expect(submitButton(element).getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("closes the form without submitting and returns focus", async () => {
+    const element = await render();
+    submitButton(element).click();
+    await flush();
+    [...root(element).querySelectorAll("button")]
+      .find((b) => text(b) === "Close the form")
+      .click();
+    await flush();
+    expect(root(element).querySelector("lightning-flow")).toBeNull();
+    expect(root(element).activeElement).toBe(submitButton(element));
   });
 
   it("says so when there are no ideas", async () => {

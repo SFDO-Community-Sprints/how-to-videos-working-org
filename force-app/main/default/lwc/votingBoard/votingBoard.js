@@ -9,9 +9,11 @@ const messageFrom = (error) =>
   error?.body?.message || error?.message || "Something went wrong.";
 
 /**
- * Lists the ideas with their totals and a Vote or Withdraw vote button for each.
+ * Lists the ideas with their vote totals and a Vote or Withdraw vote button for each.
  * Your own vote updates its idea in place and is announced in a live region.
  * The order and other people's votes change only when you choose Refresh ideas.
+ * A vote that came from your own request has no button: it stays while the request points to the idea.
+ * Submit an idea opens the HowTo_Submit_Idea flow in place, and focus returns to the button when it closes.
  */
 export default class VotingBoard extends LightningElement {
   ideas = [];
@@ -19,9 +21,44 @@ export default class VotingBoard extends LightningElement {
   loading = true;
   loadError;
   announcement = "";
+  submitting = false;
+  focusAfterRender;
 
   connectedCallback() {
     this.load(false);
+  }
+
+  renderedCallback() {
+    if (this.focusAfterRender) {
+      const target = this.refs[this.focusAfterRender];
+      this.focusAfterRender = undefined;
+      target?.focus();
+    }
+  }
+
+  get submitExpanded() {
+    return this.submitting ? "true" : "false";
+  }
+
+  handleSubmitToggle() {
+    this.submitting = !this.submitting;
+    this.focusAfterRender = this.submitting ? "submitHeading" : "submitButton";
+  }
+
+  handleSubmitClose() {
+    this.submitting = false;
+    this.focusAfterRender = "submitButton";
+  }
+
+  handleFlowStatus(event) {
+    if (
+      event.detail.status === "FINISHED" ||
+      event.detail.status === "FINISHED_SCREEN"
+    ) {
+      this.submitting = false;
+      this.focusAfterRender = "submitButton";
+      this.announce("Your idea was sent to the Triage Queue.");
+    }
   }
 
   get hasIdeas() {
@@ -34,11 +71,7 @@ export default class VotingBoard extends LightningElement {
       return {
         ...idea,
         url: `/lightning/r/HowToContent__c/${idea.id}/view`,
-        summary: [
-          count(idea.votes, "vote", "votes"),
-          count(idea.requests, "request", "requests"),
-          idea.product
-        ]
+        summary: [count(idea.votes, "vote", "votes"), idea.product]
           .filter(Boolean)
           .join(", "),
         action: idea.voted ? "Withdraw vote" : "Vote",

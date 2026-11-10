@@ -7,7 +7,7 @@ set -euo pipefail
 org=howto-npc
 args=()
 for p in "$@"; do args+=(--source-dir "$p"); done
-tests=(--tests HowToDataModelTest --tests dlrs_CaseTest)
+tests=(--tests HowToDataModelTest)
 [ -f force-app/main/default/classes/VotingBoardServiceTest.cls ] && tests+=(--tests VotingBoardServiceTest)
 out=$(sf project deploy validate --target-org "$org" "${args[@]}" --test-level RunSpecifiedTests "${tests[@]}" --wait 40 --json 2>/dev/null || true)
 id=$(jq -r '.result.id // empty' <<<"$out")

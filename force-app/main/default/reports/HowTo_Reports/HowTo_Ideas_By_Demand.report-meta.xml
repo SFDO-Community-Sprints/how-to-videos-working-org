@@ -7,16 +7,13 @@
         <field>HowToContent__c.Vote_Count__c</field>
     </columns>
     <columns>
-        <field>HowToContent__c.Request_Count__c</field>
-    </columns>
-    <columns>
         <field>HowToContent__c.Product__c</field>
     </columns>
     <columns>
         <field>CUST_CREATED_DATE</field>
     </columns>
     <description
-  >How-To Videos: ideas (Submitted content), most votes first, with their request counts.</description>
+  >How-To Videos: ideas (Submitted content), most votes first. A qualified request counts as a vote for its requester.</description>
     <filter>
         <criteriaItems>
             <column>HowToContent__c.Status__c</column>
@@ -28,7 +25,7 @@
         <language>en_US</language>
     </filter>
     <format>Tabular</format>
-    <name>Ideas by Votes and Requests</name>
+    <name>Ideas by Votes</name>
     <params>
         <name>co</name>
         <value>1</value>

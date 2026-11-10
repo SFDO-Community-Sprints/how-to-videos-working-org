@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Voter_Email__c</fullName>
+    <description
+  >The voter&apos;s email address in lower case: the requester&apos;s Web Email for a vote cast by a request, or the user&apos;s email for a vote on the voting board. One person counts once (ADR 0003).</description>
+    <externalId>false</externalId>
+    <label>Voter Email</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Email</type>
+    <unique>false</unique>
+</CustomField>

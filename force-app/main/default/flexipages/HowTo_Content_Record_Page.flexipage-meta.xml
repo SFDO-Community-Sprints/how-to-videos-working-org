@@ -53,16 +53,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Request_Count__c</fieldItem>
-                <identifier>RecordRequest_Count__cSecondaryField3</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.OwnerId</fieldItem>
                 <identifier>RecordOwnerIdSecondaryField4</identifier>
             </fieldInstance>
@@ -282,16 +272,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.Published_Date__c</fieldItem>
                 <identifier>RecordPublished_Date__cColumn2Field5</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Request_Count__c</fieldItem>
-                <identifier>RecordRequest_Count__cColumn2Field6</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>

@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Source__c</fullName>
+    <description
+  >Where the vote came from. A vote from a request cannot be withdrawn on the voting board while the request points to the content. A board vote becomes a Request vote when the same person&apos;s request is qualified to the same content.</description>
+    <label>Source</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Request</fullName>
+                <default>false</default>
+                <label>Request</label>
+            </value>
+            <value>
+                <fullName>Voting Board</fullName>
+                <default>false</default>
+                <label>Voting Board</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

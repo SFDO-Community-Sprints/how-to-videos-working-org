@@ -144,7 +144,7 @@
     <compactLayoutAssignment>SYSTEM</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <description
-  >How-To Videos: one person&apos;s support for one idea (ADR 0003). Team members hold no access to this object; the voting board&apos;s Apex service casts and withdraws votes for the signed-in person. Only Team Leadership can read votes.</description>
+  >How-To Videos: one person&apos;s support for one content record (ADR 0003). A qualified request casts one for its requester, and a team member casts one on the voting board; each person counts once. Team members hold no access to this object; only Team Leadership can read votes.</description>
     <enableActivities>false</enableActivities>
     <enableBulkApi>true</enableBulkApi>
     <enableFeeds>false</enableFeeds>

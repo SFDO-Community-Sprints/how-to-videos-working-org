@@ -3,10 +3,10 @@
     <fullName>Vote_Key_Matches</fullName>
     <active>true</active>
     <description
-  >The voter key must be the content ID followed by the voter&apos;s user ID, both 18 characters (ADR 0003). A vote must name its voter.</description>
+  >The voter key must be the content ID (18 characters) followed by the voter&apos;s email address in lower case (ADR 0003).</description>
     <errorConditionFormula
-  >ISBLANK(Voter__c) || Voter_Key__c &lt;&gt; CASESAFEID(Content__c) &amp; CASESAFEID(Voter__c)</errorConditionFormula>
+  >Voter_Key__c &lt;&gt; CASESAFEID(Content__c) &amp; LOWER(Voter_Email__c)</errorConditionFormula>
     <errorDisplayField>Voter_Key__c</errorDisplayField>
     <errorMessage
-  >The voter key must be the content ID followed by the voter&apos;s user ID.</errorMessage>
+  >The voter key must be the content ID followed by the voter&apos;s email address in lower case.</errorMessage>
 </ValidationRule>

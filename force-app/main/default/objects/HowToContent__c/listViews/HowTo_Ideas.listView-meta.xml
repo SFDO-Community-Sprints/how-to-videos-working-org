@@ -3,7 +3,6 @@
     <fullName>HowTo_Ideas</fullName>
     <columns>NAME</columns>
     <columns>Vote_Count__c</columns>
-    <columns>Request_Count__c</columns>
     <columns>Product__c</columns>
     <columns>CREATED_DATE</columns>
     <filterScope>Everything</filterScope>

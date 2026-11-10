@@ -53,12 +53,28 @@ private class HowToDataModelTest {
     );
   }
 
+  private static String myEmail() {
+    return UserInfo.getUserEmail().toLowerCase();
+  }
+
+  /** A vote on the voting board by the running user. */
   private static Vote__c voteBy(Id voter, HowToContent__c c) {
     return new Vote__c(
       Content__c = c.Id,
       Voter__c = voter,
-      Voter_Key__c = String.valueOf(c.Id) + String.valueOf(voter)
+      Voter_Email__c = myEmail(),
+      Voter_Key__c = String.valueOf(c.Id) + myEmail(),
+      Source__c = 'Voting Board'
     );
+  }
+
+  private static List<Vote__c> votesOn(HowToContent__c c) {
+    return [
+      SELECT Source__c, Voter_Email__c
+      FROM Vote__c
+      WHERE Content__c = :c.Id
+      WITH SYSTEM_MODE
+    ];
   }
 
   private static String insertError(SObject record) {
@@ -77,16 +93,6 @@ private class HowToDataModelTest {
       return e.getDmlMessage(0);
     }
     return null;
-  }
-
-  private static Decimal requestCount(HowToContent__c c) {
-    return [
-      SELECT Request_Count__c
-      FROM HowToContent__c
-      WHERE Id = :c.Id
-      WITH SYSTEM_MODE
-    ]
-    .Request_Count__c;
   }
 
   private static Decimal voteCount(HowToContent__c c) {
@@ -234,37 +240,79 @@ private class HowToDataModelTest {
     );
   }
 
-  // Request Count
+  // A qualified request counts as a vote (ADR 0003)
 
   @IsTest
-  static void requestCountCountsDifferentEmailAddresses() {
+  static void aQualifiedRequestCastsOneVotePerPerson() {
     HowToContent__c c = content('Recurring donations');
     insert as system c;
-    Test.startTest();
     insert as system new List<Case>{
       linkedRequest(c, 'first@example.com'),
-      linkedRequest(c, 'first@example.com'),
+      linkedRequest(c, 'FIRST@example.com'),
       linkedRequest(c, 'second@example.com')
     };
-    Test.stopTest();
-    Assert.areEqual(2, requestCount(c));
+    Assert.areEqual(
+      2,
+      voteCount(c),
+      'the same address in another case counts once'
+    );
+    for (Vote__c v : votesOn(c)) {
+      Assert.areEqual('Request', v.Source__c);
+    }
   }
 
   @IsTest
-  static void requestCountIgnoresRequestsWithoutAnEmail() {
+  static void relinkingARequestMovesItsVote() {
+    HowToContent__c first = content('Recurring donations');
+    HowToContent__c second = content('Monthly giving');
+    insert as system new List<HowToContent__c>{ first, second };
+    Case r = linkedRequest(first, 'first@example.com');
+    insert as system r;
+    r.HowTo_Content__c = second.Id;
+    update as system r;
+    Assert.areEqual(0, voteCount(first));
+    Assert.areEqual(1, voteCount(second));
+  }
+
+  @IsTest
+  static void unlinkingKeepsTheVoteWhileAnotherRequestFromTheSameAddressAsks() {
     HowToContent__c c = content('Recurring donations');
     insert as system c;
-    Test.startTest();
-    insert as system new List<Case>{
-      linkedRequest(c, 'first@example.com'),
-      linkedRequest(c, null)
-    };
-    Test.stopTest();
-    Assert.areEqual(
-      1,
-      requestCount(c),
-      'a request with no email address is not a different requester'
+    Case one = linkedRequest(c, 'first@example.com');
+    Case two = linkedRequest(c, 'first@example.com');
+    insert as system new List<Case>{ one, two };
+    one.HowTo_Content__c = null;
+    one.Status = 'New';
+    update as system one;
+    Assert.areEqual(1, voteCount(c), 'the other request still asks');
+    two.HowTo_Content__c = null;
+    two.Status = 'New';
+    update as system two;
+    Assert.areEqual(0, voteCount(c));
+  }
+
+  @IsTest
+  static void aRequestWithoutAnEmailCastsNoVote() {
+    HowToContent__c c = content('Recurring donations');
+    insert as system c;
+    insert as system linkedRequest(c, null);
+    Assert.areEqual(0, voteCount(c));
+  }
+
+  @IsTest
+  static void aRequestLinkedToPublishedContentCastsNoVote() {
+    grantDecideIdeas();
+    HowToContent__c c = content('Send a donation receipt');
+    System.runAs(me()) {
+      c.Status__c = 'Published';
+      c.Published_Date__c = Date.today();
+      insert as system c;
+    }
+    Assert.isNull(
+      insertError(linkedRequest(c, 'first@example.com')),
+      'triage to published content still works'
     );
+    Assert.areEqual(0, voteCount(c));
   }
 
   @IsTest
@@ -510,17 +558,22 @@ private class HowToDataModelTest {
     HowToContent__c c = content('Recurring donations');
     insert as system c;
     Id me = UserInfo.getUserId();
-    String wrongKey = 'The voter key must be the content ID followed by the voter\'s user ID.';
+    String wrongKey = 'The voter key must be the content ID followed by the voter\'s email address in lower case.';
 
     Vote__c reversedKey = voteBy(me, c);
-    reversedKey.Voter_Key__c = String.valueOf(me) + String.valueOf(c.Id);
+    reversedKey.Voter_Key__c = myEmail() + String.valueOf(c.Id);
     Assert.areEqual(wrongKey, insertError(reversedKey));
+    Vote__c upperCaseKey = voteBy(me, c);
+    upperCaseKey.Voter_Key__c = String.valueOf(c.Id) + myEmail().toUpperCase();
     Assert.areEqual(
       wrongKey,
-      insertError(
-        new Vote__c(Content__c = c.Id, Voter_Key__c = String.valueOf(c.Id))
-      ),
-      'a vote needs a voter'
+      insertError(upperCaseKey),
+      'the key holds the address in lower case'
+    );
+    Vote__c noVoter = voteBy(null, c);
+    Assert.areEqual(
+      'A vote from the voting board must name its voter.',
+      insertError(noVoter)
     );
 
     Assert.isNull(insertError(voteBy(me, c)));
@@ -701,10 +754,7 @@ private class HowToDataModelTest {
           SELECT Parent.Name
           FROM FieldPermissions
           WHERE
-            Field IN (
-              'HowToContent__c.Request_Count__c',
-              'HowToContent__c.Vote_Count__c'
-            )
+            Field = 'HowToContent__c.Vote_Count__c'
             AND PermissionsEdit = TRUE
             AND Parent.Name IN :OUR_SETS
         ]

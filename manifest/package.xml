@@ -4,12 +4,7 @@
         <members>HowToDataModelTest</members>
         <members>VotingBoardService</members>
         <members>VotingBoardServiceTest</members>
-        <members>dlrs_CaseTest</members>
         <name>ApexClass</name>
-    </types>
-    <types>
-        <members>dlrs_CaseTrigger</members>
-        <name>ApexTrigger</name>
     </types>
     <types>
         <members>Case.HowTo_Video_Requests</members>
@@ -42,7 +37,6 @@
         <members>HowToContent__c.Production_Track_Collected__c</members>
         <members>HowToContent__c.Published_Date__c</members>
         <members>HowToContent__c.Queue_Position__c</members>
-        <members>HowToContent__c.Request_Count__c</members>
         <members>HowToContent__c.Scratch_Track_Collected__c</members>
         <members>HowToContent__c.Screen_Recording_Collected__c</members>
         <members>HowToContent__c.Status__c</members>
@@ -51,13 +45,11 @@
         <members>HowToContent__c.Type__c</members>
         <members>HowToContent__c.Vote_Count__c</members>
         <members>Vote__c.Content__c</members>
+        <members>Vote__c.Source__c</members>
+        <members>Vote__c.Voter_Email__c</members>
         <members>Vote__c.Voter_Key__c</members>
         <members>Vote__c.Voter__c</members>
         <name>CustomField</name>
-    </types>
-    <types>
-        <members>dlrs__LookupRollupSummary2.HowTo_Request_Count</members>
-        <name>CustomMetadata</name>
     </types>
     <types>
         <members>HowToContent__c</members>
@@ -92,6 +84,8 @@
         <members>HowTo_Request_No_Contact</members>
         <members>HowTo_Request_Received_Email</members>
         <members>HowTo_Request_Triage_Email</members>
+        <members>HowTo_Request_Vote</members>
+        <members>HowTo_Submit_Idea</members>
         <name>Flow</name>
     </types>
     <types>
@@ -155,6 +149,7 @@
         <members>HowTo_Reports/HowTo_Priority_Queue</members>
         <members>HowTo_Reports/HowTo_Requests_By_Status</members>
         <members>HowTo_Reports/HowTo_Votes_By_Idea</members>
+        <members>HowTo_Reports/HowTo_Votes_By_Source</members>
         <name>Report</name>
     </types>
     <types>
@@ -177,6 +172,7 @@
         <members>HowToContent__c.Content_Queue_Position_Positive</members>
         <members>HowToContent__c.Content_Status_Order</members>
         <members>HowToContent__c.Content_Team_Response_Required</members>
+        <members>Vote__c.Vote_Board_Votes_Name_The_Voter</members>
         <members>Vote__c.Vote_Content_Open</members>
         <members>Vote__c.Vote_Key_Matches</members>
         <name>ValidationRule</name>

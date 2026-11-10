@@ -31,9 +31,6 @@
         <field>HowToContent__c.Vote_Count__c</field>
     </columns>
     <columns>
-        <field>HowToContent__c.Request_Count__c</field>
-    </columns>
-    <columns>
         <field>CUST_OWNER_NAME</field>
     </columns>
     <description>How-To Videos: all content grouped by status.</description>

@@ -8,6 +8,15 @@
         <div class="slds-no-flex">
           <button
             type="button"
+            class="slds-button slds-button_brand"
+            aria-expanded={submitExpanded}
+            lwc:ref="submitButton"
+            onclick={handleSubmitToggle}
+          >
+            Submit an idea
+          </button>
+          <button
+            type="button"
             class="slds-button slds-button_neutral"
             onclick={handleRefresh}
           >
@@ -17,9 +26,36 @@
       </header>
     </div>
     <div class="slds-card__body slds-card__body_inner">
+      <template lwc:if={submitting}>
+        <section
+          class="slds-box slds-m-bottom_medium"
+          aria-labelledby="submit-heading"
+        >
+          <h3
+            id="submit-heading"
+            class="slds-text-heading_small"
+            tabindex="-1"
+            lwc:ref="submitHeading"
+          >
+            Submit an idea
+          </h3>
+          <lightning-flow
+            flow-api-name="HowTo_Submit_Idea"
+            onstatuschange={handleFlowStatus}
+          ></lightning-flow>
+          <button
+            type="button"
+            class="slds-button slds-button_neutral slds-m-top_small"
+            onclick={handleSubmitClose}
+          >
+            Close the form
+          </button>
+        </section>
+      </template>
       <p class="slds-m-bottom_small">
         The list keeps its order while you read. Refresh to see other people's
-        votes and new ideas.
+        votes and new ideas. A request that triage links to an idea counts as a
+        vote for the person who asked.
       </p>
       <div role="status" class="slds-assistive-text" data-id="announcer">
         {announcement}
@@ -38,17 +74,22 @@
                 <a href={idea.url}>{idea.title}</a>
               </h3>
               <p class="slds-m-vertical_x-small">{idea.summary}</p>
-              <button
-                type="button"
-                class={idea.buttonClass}
-                data-id={idea.id}
-                aria-disabled={idea.busy}
-                onclick={handleToggle}
-              >
-                {idea.action}<span class="slds-assistive-text"
-                  >{idea.forTitle}</span
+              <template lwc:if={idea.fromRequest}>
+                <p>Your request counts as your vote.</p>
+              </template>
+              <template lwc:else>
+                <button
+                  type="button"
+                  class={idea.buttonClass}
+                  data-id={idea.id}
+                  aria-disabled={idea.busy}
+                  onclick={handleToggle}
                 >
-              </button>
+                  {idea.action}<span class="slds-assistive-text"
+                    >{idea.forTitle}</span
+                  >
+                </button>
+              </template>
             </li>
           </template>
         </ul>

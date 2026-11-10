@@ -1,5 +1,5 @@
 // Creates made-up requests and content across the statuses, so the team has something to look at.
-// Safe to run again: content is matched by title, requests by title, and the vote is upserted on its key.
+// Safe to run again: content is matched by title, requests by title, and the board vote is upserted on its key.
 // Sends no email: seeded requests are never from the public form (no receipt), are saved already triaged
 // (the triage email fires only on an update), and content is saved already published.
 // The running user needs the How-To Team Leadership and Queue Manager groups
@@ -85,8 +85,11 @@ Database.DMLOptions toTriageQueue = new Database.DMLOptions();
 toTriageQueue.assignmentRuleHeader.useDefaultRule = true;
 Database.insert(newRequests, toTriageQueue);
 
-// One vote by the running user, on the first idea.
-Id ideaId = content.get('Set up recurring donations').Id;
-upsert new Vote__c(Content__c = ideaId, Voter__c = UserInfo.getUserId(), Voter_Key__c = String.valueOf(ideaId) + String.valueOf(UserInfo.getUserId())) Voter_Key__c;
+// One voting-board vote by the running user, on the second idea. The qualified requests above cast their own votes
+// through the HowTo_Request_Vote flow (ADR 0003).
+Id ideaId = content.get('Track volunteer hours').Id;
+String myEmail = UserInfo.getUserEmail().toLowerCase();
+upsert new Vote__c(Content__c = ideaId, Voter__c = UserInfo.getUserId(), Voter_Email__c = myEmail,
+  Voter_Key__c = String.valueOf(ideaId) + myEmail, Source__c = 'Voting Board') Voter_Key__c;
 
 System.debug(LoggingLevel.ERROR, 'Created ' + newContent.size() + ' content and ' + newRequests.size() + ' requests.');

@@ -4,7 +4,6 @@
     <columns>NAME</columns>
     <columns>Published_Date__c</columns>
     <columns>Product__c</columns>
-    <columns>Request_Count__c</columns>
     <filterScope>Everything</filterScope>
     <filters>
         <field>Status__c</field>

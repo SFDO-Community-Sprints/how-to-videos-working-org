@@ -78,10 +78,6 @@
                 <behavior>Readonly</behavior>
                 <field>Vote_Count__c</field>
             </layoutItems>
-            <layoutItems>
-                <behavior>Readonly</behavior>
-                <field>Request_Count__c</field>
-            </layoutItems>
         </layoutColumns>
         <style>TwoColumnsTopToBottom</style>
     </layoutSections>
@@ -140,12 +136,13 @@
         <detailHeading>false</detailHeading>
         <editHeading>false</editHeading>
         <layoutColumns />
+        <layoutColumns />
+        <layoutColumns />
         <style>CustomLinks</style>
     </layoutSections>
     <miniLayout>
         <fields>Status__c</fields>
         <fields>Vote_Count__c</fields>
-        <fields>Request_Count__c</fields>
     </miniLayout>
     <relatedLists>
         <fields>CASES.CASE_NUMBER</fields>
@@ -157,6 +154,8 @@
     </relatedLists>
     <relatedLists>
         <fields>NAME</fields>
+        <fields>Voter_Email__c</fields>
+        <fields>Source__c</fields>
         <fields>Voter__c</fields>
         <fields>CREATED_DATE</fields>
         <relatedList>Vote__c.Content__c</relatedList>

@@ -3,10 +3,10 @@
     <fullName>Voter_Key__c</fullName>
     <caseSensitive>false</caseSensitive>
     <description
-  >The 18-character content ID followed by the 18-character voter user ID. Required and unique, so the database refuses a second vote by one person on one idea. A validation rule rejects any other key. Writers upsert on this key.</description>
+  >The 18-character content ID followed by the voter&apos;s email address in lower case. Required and unique, so the database refuses a second vote by one person on one content record, whether they asked or voted. A validation rule rejects any other key. Writers upsert on this key (ADR 0003).</description>
     <externalId>true</externalId>
     <label>Voter Key</label>
-    <length>36</length>
+    <length>100</length>
     <required>true</required>
     <trackTrending>false</trackTrending>
     <type>Text</type>

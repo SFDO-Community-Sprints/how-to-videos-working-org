@@ -3,7 +3,7 @@
     <fullName>Voter__c</fullName>
     <deleteConstraint>SetNull</deleteConstraint>
     <description
-  >The person who cast the vote. A lookup to User cannot be required, so Vote_Key_Matches rejects a vote without a voter.</description>
+  >The user who voted on the voting board. Blank for a vote cast by a request.</description>
     <label>Voter</label>
     <referenceTo>User</referenceTo>
     <relationshipName>HowTo_Votes</relationshipName>
