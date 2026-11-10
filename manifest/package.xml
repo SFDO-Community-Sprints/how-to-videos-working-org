@@ -90,6 +90,7 @@
         <name>StandardValueSet</name>
     </types>
     <types>
+        <members>Case.HowTo_Content_Only_On_Requests</members>
         <members>Case.HowTo_Request_Not_Qualified_Reason</members>
         <members>Case.HowTo_Request_Qualified_Iff_Content</members>
         <members>Case.HowTo_Request_Requires_Title</members>
@@ -99,6 +100,7 @@
         <members>HowToContent__c.Content_Champion_Required</members>
         <members>HowToContent__c.Content_Drive_Folder_Required</members>
         <members>HowToContent__c.Content_Published_Date_Required</members>
+        <members>HowToContent__c.Content_Queue_Position_Positive</members>
         <members>HowToContent__c.Content_Status_Order</members>
         <members>HowToContent__c.Content_Team_Response_Required</members>
         <members>Vote__c.Vote_Content_Open</members>

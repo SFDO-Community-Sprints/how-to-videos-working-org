@@ -96,6 +96,7 @@ A vote is the custom object `Vote__c`, a master-detail child of content. It hold
 - Three permission set groups: How-To Team Member, How-To Team Leadership, and How-To Queue Manager. The Queue Manager's group includes the standard permission to run prompt templates.
 - Only Team Leadership can see who voted.
 - Field history on request Status and Owner, and on content Status, Owner, and Queue Position.
+- Only the holder or an administrator can change the holder of content that someone holds. Any team member can take content from the queue.
 
 ### The public form
 
@@ -170,3 +171,4 @@ Each has a default that the build assumes until a convening decides.
 5. **The Product list, and the Type lists for requests and for content.**
 6. **Where published content is hosted,** and what a published record must carry.
 7. **The three differences from the whiteboards,** listed above.
+8. **Whether the Queue Manager can take content from a holder.** Default: no. The holder hands content over or returns it to the queue, and an administrator moves content whose holder cannot. If the team says yes, round 1 gains one reassign action that runs in system context.

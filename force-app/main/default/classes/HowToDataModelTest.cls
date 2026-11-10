@@ -1,15 +1,23 @@
 /**
- * Proves the round 1 data model rules: the Video Request rules on Case, the status rules on content,
- * the vote key, the vote and request counts, and the delete restriction.
- * Runs as the deploying user, with system-mode DML: these tests prove the rules, not who can see what.
+ * Proves the round 1 data model: the Video Request rules on Case, the status rules on content,
+ * the vote key, the vote and request counts, the delete restriction, and which permission set grants what.
+ * Rule tests run as the deploying user with system-mode DML, so they prove the rules, not record access.
  * Tests that need Team Leadership's custom permission grant or remove it, then act inside System.runAs
- * so the change takes effect. The result does not depend on the user's real assignments.
+ * so the change takes effect. Nothing depends on the user's real assignments.
  */
 @IsTest
 private class HowToDataModelTest {
   private static final Id REQUEST_TYPE = Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName()
     .get('HowTo_Video_Request')
     .getRecordTypeId();
+  private static final String ONE_AT_A_TIME = 'From Drafting onward, content moves forward one status at a time. Choose the next status after the current one, or any earlier status.';
+  private static final String LEADERSHIP_ONLY = 'Only Team Leadership can accept or decline an idea, or undo that decision.';
+  private static final String VOTING_CLOSED = 'Voting is closed for this content.';
+  private static final Set<String> OUR_SETS = new Set<String>{
+    'HowTo_Member_Access',
+    'HowTo_Leadership_Access',
+    'HowTo_Queue_Manager_Access'
+  };
 
   private static Case request(String title, String email) {
     return new Case(
@@ -24,11 +32,32 @@ private class HowToDataModelTest {
     );
   }
 
+  private static Case linkedRequest(HowToContent__c c, String email) {
+    Case r = request('Recurring donations', email);
+    r.HowTo_Content__c = c.Id;
+    r.Status = 'Qualified';
+    return r;
+  }
+
+  private static Id clientEngagement() {
+    return Schema.SObjectType.Case.getRecordTypeInfosByDeveloperName()
+      .get('Client_Engagement')
+      .getRecordTypeId();
+  }
+
   private static HowToContent__c content(String title) {
     return new HowToContent__c(
       Name = title,
       Champion_Name__c = 'Test Champion',
       Champion_Email__c = 'champion@example.com'
+    );
+  }
+
+  private static Vote__c voteBy(Id voter, HowToContent__c c) {
+    return new Vote__c(
+      Content__c = c.Id,
+      Voter__c = voter,
+      Voter_Key__c = String.valueOf(c.Id) + String.valueOf(voter)
     );
   }
 
@@ -48,6 +77,26 @@ private class HowToDataModelTest {
       return e.getDmlMessage(0);
     }
     return null;
+  }
+
+  private static Decimal requestCount(HowToContent__c c) {
+    return [
+      SELECT Request_Count__c
+      FROM HowToContent__c
+      WHERE Id = :c.Id
+      WITH SYSTEM_MODE
+    ]
+    .Request_Count__c;
+  }
+
+  private static Decimal voteCount(HowToContent__c c) {
+    return [
+      SELECT Vote_Count__c
+      FROM HowToContent__c
+      WHERE Id = :c.Id
+      WITH SYSTEM_MODE
+    ]
+    .Vote_Count__c;
   }
 
   private static User me() {
@@ -87,6 +136,16 @@ private class HowToDataModelTest {
     }
   }
 
+  private static Set<String> setsIn(List<SObject> rows) {
+    Set<String> names = new Set<String>();
+    for (SObject row : rows) {
+      names.add((String) row.getSObject('Parent').get('Name'));
+    }
+    return names;
+  }
+
+  // Requests
+
   @IsTest
   static void requestNeedsTitle() {
     Assert.areEqual(
@@ -122,9 +181,7 @@ private class HowToDataModelTest {
     newWithContent.HowTo_Content__c = c.Id;
     Assert.areEqual(expected, insertError(newWithContent));
 
-    Case qualified = request('Recurring donations', 'a@example.com');
-    qualified.HowTo_Content__c = c.Id;
-    qualified.Status = 'Qualified';
+    Case qualified = linkedRequest(c, 'a@example.com');
     Assert.isNull(insertError(qualified));
     Assert.isTrue(
       [SELECT IsClosed FROM Case WHERE Id = :qualified.Id WITH SYSTEM_MODE]
@@ -137,11 +194,11 @@ private class HowToDataModelTest {
   static void notQualifiedNeedsAReason() {
     Case r = request('Buy my product', 'a@example.com');
     insert as system r;
+    String expected = 'Enter the reason this request is not qualified. The requester receives it by email.';
     r.Status = 'Not Qualified';
-    Assert.areEqual(
-      'Enter the reason this request is not qualified. The requester receives it by email.',
-      updateError(r)
-    );
+    Assert.areEqual(expected, updateError(r));
+    r.HowTo_Not_Qualified_Reason__c = '   ';
+    Assert.areEqual(expected, updateError(r), 'spaces are not a reason');
     r.HowTo_Not_Qualified_Reason__c = 'This is an advertisement.';
     Assert.isNull(updateError(r));
     Assert.isTrue(
@@ -151,30 +208,62 @@ private class HowToDataModelTest {
   }
 
   @IsTest
+  static void otherCaseRecordTypesAreLeftAlone() {
+    Case npcCase = new Case(
+      RecordTypeId = clientEngagement(),
+      Status = 'Escalated'
+    );
+    Assert.isNull(
+      insertError(npcCase),
+      'a Nonprofit Cloud case needs no title and keeps its own statuses'
+    );
+  }
+
+  @IsTest
+  static void onlyAVideoRequestCanPointToContent() {
+    HowToContent__c c = content('Recurring donations');
+    insert as system c;
+    Case npcCase = new Case(
+      RecordTypeId = clientEngagement(),
+      Status = 'New',
+      HowTo_Content__c = c.Id
+    );
+    Assert.areEqual(
+      'Only a Video Request can point to content.',
+      insertError(npcCase)
+    );
+  }
+
+  // Request Count
+
+  @IsTest
   static void requestCountCountsDifferentEmailAddresses() {
     HowToContent__c c = content('Recurring donations');
     insert as system c;
-    List<Case> requests = new List<Case>{
-      request('Recurring donations', 'first@example.com'),
-      request('Set up recurring gifts', 'first@example.com'),
-      request('Monthly giving', 'second@example.com')
-    };
-    for (Case r : requests) {
-      r.HowTo_Content__c = c.Id;
-      r.Status = 'Qualified';
-    }
     Test.startTest();
-    insert as system requests;
+    insert as system new List<Case>{
+      linkedRequest(c, 'first@example.com'),
+      linkedRequest(c, 'first@example.com'),
+      linkedRequest(c, 'second@example.com')
+    };
+    Test.stopTest();
+    Assert.areEqual(2, requestCount(c));
+  }
+
+  @IsTest
+  static void requestCountIgnoresRequestsWithoutAnEmail() {
+    HowToContent__c c = content('Recurring donations');
+    insert as system c;
+    Test.startTest();
+    insert as system new List<Case>{
+      linkedRequest(c, 'first@example.com'),
+      linkedRequest(c, null)
+    };
     Test.stopTest();
     Assert.areEqual(
-      2,
-      [
-        SELECT Request_Count__c
-        FROM HowToContent__c
-        WHERE Id = :c.Id
-        WITH SYSTEM_MODE
-      ]
-      .Request_Count__c
+      1,
+      requestCount(c),
+      'a request with no email address is not a different requester'
     );
   }
 
@@ -182,10 +271,7 @@ private class HowToDataModelTest {
   static void contentThatRequestsPointToCannotBeDeleted() {
     HowToContent__c c = content('Recurring donations');
     insert as system c;
-    Case r = request('Recurring donations', 'a@example.com');
-    r.HowTo_Content__c = c.Id;
-    r.Status = 'Qualified';
-    insert as system r;
+    insert as system linkedRequest(c, 'a@example.com');
     try {
       delete as system c;
       Assert.fail('Content with a request pointing to it was deleted');
@@ -194,35 +280,96 @@ private class HowToDataModelTest {
     }
   }
 
+  // Content status
+
   @IsTest
-  static void onlyLeadershipAcceptsAndDeclines() {
+  static void membersCannotMakeADecision() {
     revokeDecideIdeas();
-    HowToContent__c c = content('Recurring donations');
     System.runAs(me()) {
+      HowToContent__c c = content('Recurring donations');
       insert as system c;
       c.Status__c = 'Accepted';
+      Assert.areEqual(LEADERSHIP_ONLY, updateError(c), 'accept');
+      c.Status__c = 'Declined';
+      c.Team_Response__c = 'Out of scope for the series.';
+      Assert.areEqual(LEADERSHIP_ONLY, updateError(c), 'decline');
+
+      HowToContent__c pastSubmitted = content('Grant reports');
+      pastSubmitted.Status__c = 'Drafting';
       Assert.areEqual(
-        'Only Team Leadership can accept or decline an idea.',
-        updateError(c)
+        LEADERSHIP_ONLY,
+        insertError(pastSubmitted),
+        'create past Submitted'
       );
     }
+  }
+
+  @IsTest
+  static void membersCannotUndoADecisionButCanMoveBackWithinIt() {
+    grantDecideIdeas();
+    HowToContent__c accepted = content('Recurring donations');
+    HowToContent__c declined = content('Grant reports');
+    System.runAs(me()) {
+      insert as system new List<HowToContent__c>{ accepted, declined };
+      accepted.Status__c = 'Accepted';
+      declined.Status__c = 'Declined';
+      declined.Team_Response__c = 'Out of scope for the series.';
+      update as system new List<HowToContent__c>{ accepted, declined };
+      accepted.Status__c = 'Drafting';
+      update as system accepted;
+    }
+    revokeDecideIdeas();
+    System.runAs(me()) {
+      accepted.Status__c = 'Accepted';
+      Assert.isNull(
+        updateError(accepted),
+        'Drafting back to Accepted stays within the decision'
+      );
+      accepted.Status__c = 'Submitted';
+      Assert.areEqual(LEADERSHIP_ONLY, updateError(accepted), 'un-accept');
+      declined.Status__c = 'Submitted';
+      Assert.areEqual(LEADERSHIP_ONLY, updateError(declined), 'un-decline');
+    }
+  }
+
+  @IsTest
+  static void leadershipAcceptsDeclinesAndUndoes() {
     grantDecideIdeas();
     System.runAs(me()) {
+      HowToContent__c c = content('Recurring donations');
+      insert as system c;
+      c.Status__c = 'Accepted';
+      Assert.isNull(updateError(c));
+      c.Status__c = 'Submitted';
+      Assert.isNull(updateError(c));
+      c.Status__c = 'Declined';
+      c.Team_Response__c = 'Out of scope for the series.';
       Assert.isNull(updateError(c));
     }
   }
 
   @IsTest
-  static void championIsRequiredBeforeAccepted() {
+  static void championIsRequiredToAccept() {
     grantDecideIdeas();
     System.runAs(me()) {
-      HowToContent__c c = new HowToContent__c(
-        Name = 'Recurring donations',
-        Status__c = 'Accepted'
+      String expected = 'Enter the champion\'s name and email before the idea is accepted.';
+      HowToContent__c noEmail = content('Recurring donations');
+      noEmail.Champion_Email__c = null;
+      noEmail.Status__c = 'Accepted';
+      Assert.areEqual(expected, insertError(noEmail));
+      HowToContent__c noName = content('Recurring donations');
+      noName.Champion_Name__c = null;
+      noName.Status__c = 'Accepted';
+      Assert.areEqual(expected, insertError(noName));
+
+      HowToContent__c migrated = new HowToContent__c(
+        Name = 'Published before round 1',
+        Status__c = 'Published',
+        Published_Date__c = Date.today()
       );
-      Assert.areEqual(
-        'Enter the champion\'s name and email before the idea is accepted.',
-        insertError(c)
+      Assert.isNull(
+        insertError(migrated),
+        'published content can be loaded without a champion'
       );
     }
   }
@@ -233,11 +380,11 @@ private class HowToDataModelTest {
     System.runAs(me()) {
       HowToContent__c c = content('Recurring donations');
       insert as system c;
+      String expected = 'Enter the team response before declining the idea.';
       c.Status__c = 'Declined';
-      Assert.areEqual(
-        'Enter the team response before declining the idea.',
-        updateError(c)
-      );
+      Assert.areEqual(expected, updateError(c));
+      c.Team_Response__c = '  ';
+      Assert.areEqual(expected, updateError(c), 'spaces are not a response');
       c.Team_Response__c = 'Out of scope for the series.';
       Assert.isNull(updateError(c));
     }
@@ -249,92 +396,125 @@ private class HowToDataModelTest {
     System.runAs(me()) {
       HowToContent__c c = content('Recurring donations');
       insert as system c;
-      String oneAtATime = 'From Drafting onward, content moves forward one status at a time. Choose the next status after the current one, or any earlier status.';
 
       c.Status__c = 'Drafting';
       Assert.areEqual(
-        oneAtATime,
+        ONE_AT_A_TIME,
         updateError(c),
         'an idea cannot skip acceptance'
       );
-
       c.Status__c = 'Accepted';
       Assert.isNull(updateError(c));
       c.Status__c = 'Drafting';
       Assert.isNull(updateError(c));
 
-      c.Status__c = 'Production';
       c.Drive_Folder__c = 'https://example.com/folder';
+      c.Status__c = 'Production';
       Assert.areEqual(
-        oneAtATime,
+        ONE_AT_A_TIME,
         updateError(c),
         'Drafting cannot skip Proofing'
       );
-
       c.Status__c = 'Proofing';
       Assert.isNull(updateError(c));
       c.Status__c = 'Production';
       Assert.isNull(updateError(c));
 
-      c.Status__c = 'Submitted';
+      c.Status__c = 'Accepted';
       Assert.isNull(updateError(c), 'content can move back any distance');
     }
   }
 
   @IsTest
-  static void productionStatusesNeedTheFolderAndArtifacts() {
+  static void productionStatusesNeedTheFolderAndAllThreeArtifacts() {
     grantDecideIdeas();
     System.runAs(me()) {
       HowToContent__c c = content('Recurring donations');
-      c.Status__c = 'Production';
-      Assert.areEqual(
-        'Enter the Drive folder before moving content to Production.',
-        insertError(c)
-      );
-
-      c.Drive_Folder__c = 'https://example.com/folder';
-      c.Status__c = 'Editing';
       c.Scratch_Track_Collected__c = true;
       c.Screen_Recording_Collected__c = true;
-      Assert.areEqual(
-        'Collect the scratch track, the screen recording, and the production track before moving content to Editing.',
-        insertError(c)
-      );
+      c.Production_Track_Collected__c = true;
+      for (
+        String status : new List<String>{
+          'Production',
+          'Editing',
+          'Final Review'
+        }
+      ) {
+        c.Status__c = status;
+        Assert.areEqual(
+          'Enter the Drive folder before moving content to Production.',
+          insertError(c),
+          status
+        );
+      }
+
+      String artifacts = 'Collect the scratch track, the screen recording, and the production track before moving content to Editing.';
+      c.Drive_Folder__c = 'https://example.com/folder';
+      for (
+        String missing : new List<String>{
+          'Scratch_Track_Collected__c',
+          'Screen_Recording_Collected__c',
+          'Production_Track_Collected__c'
+        }
+      ) {
+        c.Scratch_Track_Collected__c = true;
+        c.Screen_Recording_Collected__c = true;
+        c.Production_Track_Collected__c = true;
+        c.put(missing, false);
+        c.Status__c = 'Editing';
+        Assert.areEqual(artifacts, insertError(c), missing + ' at Editing');
+        c.Status__c = 'Final Review';
+        Assert.areEqual(
+          artifacts,
+          insertError(c),
+          missing + ' at Final Review'
+        );
+      }
+      c.Scratch_Track_Collected__c = true;
+      c.Screen_Recording_Collected__c = true;
       c.Production_Track_Collected__c = true;
       Assert.isNull(insertError(c));
     }
   }
 
   @IsTest
-  static void publishedNeedsAPublishedDate() {
+  static void publishedAndRetiredNeedAPublishedDate() {
     grantDecideIdeas();
     System.runAs(me()) {
-      HowToContent__c c = content('Recurring donations');
-      c.Status__c = 'Published';
-      Assert.areEqual('Enter the published date.', insertError(c));
-      c.Published_Date__c = Date.today();
-      Assert.isNull(insertError(c));
+      for (String status : new List<String>{ 'Published', 'Retired' }) {
+        HowToContent__c c = content('Recurring donations');
+        c.Status__c = status;
+        Assert.areEqual('Enter the published date.', insertError(c), status);
+        c.Published_Date__c = Date.today();
+        Assert.isNull(insertError(c), status);
+      }
     }
   }
+
+  @IsTest
+  static void queuePositionStartsAtOne() {
+    HowToContent__c c = content('Recurring donations');
+    c.Queue_Position__c = 0;
+    Assert.areEqual(
+      'Queue Position starts at 1. Position 1 is produced first.',
+      insertError(c)
+    );
+    c.Queue_Position__c = 1;
+    Assert.isNull(insertError(c));
+  }
+
+  // Votes
 
   @IsTest
   static void oneVotePerPersonWithTheRightKey() {
     HowToContent__c c = content('Recurring donations');
     insert as system c;
     Id me = UserInfo.getUserId();
-    String key = String.valueOf(c.Id) + String.valueOf(me);
     String wrongKey = 'The voter key must be the content ID followed by the voter\'s user ID.';
 
-    Assert.areEqual(
-      wrongKey,
-      insertError(
-        new Vote__c(
-          Content__c = c.Id,
-          Voter__c = me,
-          Voter_Key__c = String.valueOf(me) + String.valueOf(c.Id)
-        )
-      )
-    );
+    Vote__c reversedKey = voteBy(me, c);
+    reversedKey.Voter_Key__c = String.valueOf(me) + String.valueOf(c.Id);
+    Assert.areEqual(wrongKey, insertError(reversedKey));
     Assert.areEqual(
       wrongKey,
       insertError(
@@ -343,52 +523,192 @@ private class HowToDataModelTest {
       'a vote needs a voter'
     );
 
-    Assert.isNull(
-      insertError(
-        new Vote__c(Content__c = c.Id, Voter__c = me, Voter_Key__c = key)
-      )
-    );
+    Assert.isNull(insertError(voteBy(me, c)));
     try {
-      insert as system new Vote__c(
-        Content__c = c.Id,
-        Voter__c = me,
-        Voter_Key__c = key
-      );
+      insert as system voteBy(me, c);
       Assert.fail('A second vote by the same person was saved');
     } catch (DmlException e) {
       Assert.areEqual(StatusCode.DUPLICATE_VALUE, e.getDmlType(0));
     }
+    Assert.areEqual(1, voteCount(c));
+  }
+
+  @IsTest
+  static void withdrawingAVoteLowersTheCount() {
+    HowToContent__c c = content('Recurring donations');
+    insert as system c;
+    Vote__c v = voteBy(UserInfo.getUserId(), c);
+    insert as system v;
+    Assert.areEqual(1, voteCount(c));
+    delete as system v;
+    Assert.areEqual(0, voteCount(c));
+  }
+
+  @IsTest
+  static void declinedPublishedAndRetiredContentTakeNoVotes() {
+    grantDecideIdeas();
+    System.runAs(me()) {
+      HowToContent__c declined = content('Declined idea');
+      declined.Status__c = 'Declined';
+      declined.Team_Response__c = 'Out of scope for the series.';
+      HowToContent__c published = content('Published video');
+      published.Status__c = 'Published';
+      published.Published_Date__c = Date.today();
+      HowToContent__c retired = content('Retired video');
+      retired.Status__c = 'Retired';
+      retired.Published_Date__c = Date.today();
+      HowToContent__c accepted = content('Accepted idea');
+      accepted.Status__c = 'Accepted';
+      insert as system new List<HowToContent__c>{
+        declined,
+        published,
+        retired,
+        accepted
+      };
+
+      Id me = UserInfo.getUserId();
+      Assert.areEqual(
+        VOTING_CLOSED,
+        insertError(voteBy(me, declined)),
+        'Declined'
+      );
+      Assert.areEqual(
+        VOTING_CLOSED,
+        insertError(voteBy(me, published)),
+        'Published'
+      );
+      Assert.areEqual(
+        VOTING_CLOSED,
+        insertError(voteBy(me, retired)),
+        'Retired'
+      );
+      Assert.isNull(
+        insertError(voteBy(me, accepted)),
+        'voting stays open after acceptance'
+      );
+    }
+  }
+
+  // Who holds which permission: the org has one user, who holds every group, so these are checked as configuration.
+
+  @IsTest
+  static void onlyLeadershipCanReadVotesAndNobodyWritesThem() {
+    List<ObjectPermissions> votes = [
+      SELECT
+        Parent.Name,
+        PermissionsRead,
+        PermissionsCreate,
+        PermissionsEdit,
+        PermissionsDelete
+      FROM ObjectPermissions
+      WHERE SobjectType = 'Vote__c' AND Parent.Name IN :OUR_SETS
+    ];
     Assert.areEqual(
-      1,
-      [
-        SELECT Vote_Count__c
-        FROM HowToContent__c
-        WHERE Id = :c.Id
-        WITH SYSTEM_MODE
-      ]
-      .Vote_Count__c
+      new Set<String>{ 'HowTo_Leadership_Access' },
+      setsIn(votes)
+    );
+    Assert.isTrue(votes[0].PermissionsRead);
+    Assert.isFalse(
+      votes[0].PermissionsCreate ||
+        votes[0].PermissionsEdit ||
+        votes[0].PermissionsDelete
+    );
+    Assert.areEqual(
+      new Set<String>{ 'HowTo_Leadership_Access' },
+      setsIn(
+        [
+          SELECT Parent.Name
+          FROM FieldPermissions
+          WHERE
+            Field = 'Vote__c.Voter__c'
+            AND PermissionsRead = TRUE
+            AND Parent.Name IN :OUR_SETS
+        ]
+      )
     );
   }
 
   @IsTest
-  static void closedContentTakesNoVotes() {
-    grantDecideIdeas();
-    System.runAs(me()) {
-      HowToContent__c c = content('Recurring donations');
-      c.Status__c = 'Declined';
-      c.Team_Response__c = 'Out of scope for the series.';
-      insert as system c;
-      Id me = UserInfo.getUserId();
-      Assert.areEqual(
-        'Voting is closed for this content.',
-        insertError(
-          new Vote__c(
-            Content__c = c.Id,
-            Voter__c = me,
-            Voter_Key__c = String.valueOf(c.Id) + String.valueOf(me)
-          )
-        )
-      );
-    }
+  static void onlyTheQueueManagerCreatesContentAndSetsQueuePosition() {
+    Assert.areEqual(
+      new Set<String>{ 'HowTo_Queue_Manager_Access' },
+      setsIn(
+        [
+          SELECT Parent.Name
+          FROM ObjectPermissions
+          WHERE
+            SobjectType = 'HowToContent__c'
+            AND PermissionsCreate = TRUE
+            AND Parent.Name IN :OUR_SETS
+        ]
+      )
+    );
+    Assert.areEqual(
+      new Set<String>{ 'HowTo_Queue_Manager_Access' },
+      setsIn(
+        [
+          SELECT Parent.Name
+          FROM FieldPermissions
+          WHERE
+            Field = 'HowToContent__c.Queue_Position__c'
+            AND PermissionsEdit = TRUE
+            AND Parent.Name IN :OUR_SETS
+        ]
+      )
+    );
+  }
+
+  @IsTest
+  static void onlyLeadershipChangesTheChampionAndDecides() {
+    Assert.areEqual(
+      new Set<String>{ 'HowTo_Leadership_Access' },
+      setsIn(
+        [
+          SELECT Parent.Name
+          FROM FieldPermissions
+          WHERE
+            Field IN (
+              'HowToContent__c.Champion_Name__c',
+              'HowToContent__c.Champion_Email__c'
+            )
+            AND PermissionsEdit = TRUE
+            AND Parent.Name IN :OUR_SETS
+        ]
+      )
+    );
+    Id decide = [
+      SELECT Id
+      FROM CustomPermission
+      WHERE DeveloperName = 'HowTo_Decide_Ideas'
+    ]
+    .Id;
+    Assert.areEqual(
+      new Set<String>{ 'HowTo_Leadership_Access' },
+      setsIn(
+        [
+          SELECT Parent.Name
+          FROM SetupEntityAccess
+          WHERE SetupEntityId = :decide AND Parent.Name IN :OUR_SETS
+        ]
+      )
+    );
+  }
+
+  @IsTest
+  static void nobodyEditsTheCounts() {
+    Assert.isTrue(
+      [
+          SELECT Parent.Name
+          FROM FieldPermissions
+          WHERE
+            Field IN (
+              'HowToContent__c.Request_Count__c',
+              'HowToContent__c.Vote_Count__c'
+            )
+            AND PermissionsEdit = TRUE
+            AND Parent.Name IN :OUR_SETS
+        ]
+        .isEmpty()
+    );
   }
 }

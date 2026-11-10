@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HowTo_Content_Only_On_Requests</fullName>
+    <active>true</active>
+    <description
+  >How-To Videos: only a Video Request can point to content. Keeps other Case record types out of Request Count and the qualified-if-linked rule, including a linked request whose record type is changed.</description>
+    <errorConditionFormula
+  >AND(NOT(ISBLANK(HowTo_Content__c)), RecordType.DeveloperName &lt;&gt; &quot;HowTo_Video_Request&quot;)</errorConditionFormula>
+    <errorDisplayField>HowTo_Content__c</errorDisplayField>
+    <errorMessage>Only a Video Request can point to content.</errorMessage>
+</ValidationRule>

@@ -21,7 +21,24 @@ Nothing is built yet. Round 1 is described in the build plan.
 
 The org is the working copy. Volunteers build there with clicks, and the repository receives a retrieve after each working session. Code starts in the repository and is deployed to the org. See [ADR 0007](docs/adr/0007-the-org-is-the-working-copy.md).
 
-The manifest that lists the project's components is added with the first component. Until then there is nothing to retrieve.
+[`manifest/package.xml`](manifest/package.xml) lists every component the project owns. After each working session, retrieve them and commit:
+
+```sh
+sf project retrieve start --manifest manifest/package.xml --target-org howto-npc
+```
+
+The three Case value sets in the manifest are shared with Nonprofit Cloud. The project owns only these values in them:
+
+- Status: Qualified, Not Qualified
+- Type: New content, Problem with existing content
+- Origin: Community, Comms, Internal, Import
+
+A deploy replaces a whole value set, so:
+
+- Code deploys name their own paths with `--source-dir` and never use the manifest.
+- A deploy that includes `standardValueSets` goes in this order: retrieve the three sets, add our values, validate, deploy, then confirm that every earlier value is still there.
+
+The org needs the Declarative Lookup Rollup Summaries (DLRS) package, version 2.25 or later, before any deploy. It counts Request Count.
 
 The working org is a trial that expires on 2026-12-11 unless Salesforce extends it.
 

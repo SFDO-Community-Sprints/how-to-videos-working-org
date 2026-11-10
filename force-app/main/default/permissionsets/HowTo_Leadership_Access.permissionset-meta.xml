@@ -21,6 +21,11 @@
         <field>HowToContent__c.Team_Response__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Vote__c.Voter__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>How-To Team Leadership Access</label>
     <objectPermissions>

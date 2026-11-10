@@ -5,7 +5,7 @@
     <description
   >How-To Videos: a request that is Not Qualified needs a reason, which is sent to the requester.</description>
     <errorConditionFormula
-  >AND(RecordType.DeveloperName = &quot;HowTo_Video_Request&quot;, ISPICKVAL(Status, &quot;Not Qualified&quot;), ISBLANK(HowTo_Not_Qualified_Reason__c))</errorConditionFormula>
+  >AND(RecordType.DeveloperName = &quot;HowTo_Video_Request&quot;, ISPICKVAL(Status, &quot;Not Qualified&quot;), LEN(TRIM(HowTo_Not_Qualified_Reason__c)) = 0)</errorConditionFormula>
     <errorDisplayField>HowTo_Not_Qualified_Reason__c</errorDisplayField>
     <errorMessage
   >Enter the reason this request is not qualified. The requester receives it by email.</errorMessage>
