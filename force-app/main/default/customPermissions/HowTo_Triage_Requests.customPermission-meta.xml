@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
     <description
-  >How-To Videos: triage requests: create content from a request, link a request to content, or mark it Not Qualified. Held by the Queue Manager. The triage flows check it because the create flow runs in system mode.</description>
+  >How-To Videos: triage requests with Promote to Idea, Add to Existing Content, or Not Qualified. Held by the Queue Manager. The triage flows check it because Promote to Idea runs in system mode.</description>
     <isLicensed>false</isLicensed>
     <label>Triage Requests</label>
 </CustomPermission>

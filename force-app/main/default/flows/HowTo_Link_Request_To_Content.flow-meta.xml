@@ -98,11 +98,11 @@
         </rules>
     </decisions>
     <description
-  >How-To Videos: the Queue Manager links a request to content that already exists. Shows the duplicate check, lets the Queue Manager choose the content, refuses Declined or Retired content, then marks the request Qualified and linked. Runs in user mode; checks the Triage Requests permission first.</description>
+  >How-To Videos: the Queue Manager adds a request to content that already exists (the Add to Existing Content action). Shows the duplicate check, lets the Queue Manager choose the content, refuses Declined or Retired content, then marks the request Qualified and linked. Runs in user mode; checks the Triage Requests permission first.</description>
     <environments>Default</environments>
     <interviewLabel
-  >How-To link request {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>How-To: Link Request to Existing Content</label>
+  >How-To add to existing content {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>How-To: Add Request to Existing Content</label>
     <processMetadataValues>
         <name>BuilderType</name>
         <value>
@@ -257,7 +257,7 @@
     </screens>
     <screens>
         <name>Cannot_link</name>
-        <label>Cannot link</label>
+        <label>Cannot add</label>
         <locationX>500</locationX>
         <locationY>760</locationY>
         <allowBack>false</allowBack>
@@ -269,7 +269,7 @@
         <fields>
             <name>Cannot_link_text</name>
             <fieldText
-      >&lt;p&gt;{!Get_the_chosen_content.Name} is {!Get_the_chosen_content.Status__c}, so it cannot take requests. Choose other content, or cancel and mark the request Not Qualified.&lt;/p&gt;</fieldText>
+      >&lt;p&gt;{!Get_the_chosen_content.Name} is {!Get_the_chosen_content.Status__c}, so it cannot take requests. Choose other content, or cancel and use Not Qualified.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
@@ -350,7 +350,7 @@
                 </width>
             </styleProperties>
         </fields>
-        <nextOrFinishButtonLabel>Link request</nextOrFinishButtonLabel>
+        <nextOrFinishButtonLabel>Add to content</nextOrFinishButtonLabel>
         <showFooter>true</showFooter>
         <showHeader>true</showHeader>
     </screens>
@@ -381,7 +381,7 @@
     </screens>
     <screens>
         <name>Request_linked</name>
-        <label>Request linked</label>
+        <label>Request added</label>
         <locationX>176</locationX>
         <locationY>980</locationY>
         <allowBack>false</allowBack>
@@ -390,7 +390,7 @@
         <fields>
             <name>Request_linked_text</name>
             <fieldText
-      >&lt;p&gt;The request is linked to {!Get_the_chosen_content.Name} and is Qualified. The requester is emailed if the request has an address.&lt;/p&gt;</fieldText>
+      >&lt;p&gt;The request is added to {!Get_the_chosen_content.Name} and is Qualified. The requester is emailed if the request has an address.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
