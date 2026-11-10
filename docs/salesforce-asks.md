@@ -9,7 +9,7 @@ This list is in the order that blocks us. Where a number appears, it is our esti
 1. **Full Salesforce licenses in the working org, about 100.** The org has one, and it is in use. Triage and voting are done by internal users, and a request is a Case, which a Salesforce Platform license does not include. The number covers the team and the people at one sprint who want a login. It is an estimate.
 2. **A longer life for the working org.** It is a Nonprofit Cloud trial that expires on 2026-12-11. We need the trial extended, or a permanent org to move to.
 3. **A named owner for the org at Salesforce,** and a statement of where Salesforce wants the source kept.
-4. **A sending email address that the org is authorised to use.** Requesters get an email on receipt, at triage, and at publication.
+4. **A sending email address that the org is authorised to use.** Requesters get an email on receipt, at triage, and at publication. The trial allows 15 emails a day, which stops triage; we need the standard allowance.
 5. **A usage allowance for generative AI.** One prompt template call runs at triage, to suggest content that a new request may duplicate.
 6. **GitHub Pages turned on for this repository.** This one is for the repository's admins. The public request form is one HTML page in the repository.
 

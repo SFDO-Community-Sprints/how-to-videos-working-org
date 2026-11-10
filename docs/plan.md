@@ -6,17 +6,29 @@ What exists, what round 1 builds, what comes after, and what the team still has 
 
 Round 1 is built in the working org as a prototype for the team to click through. The repository holds its components, the public request form, and scripts that assign access and create made-up sample data. Nobody on the team can use it yet, because the org has one login.
 
-Where the prototype differs from this plan, or has not been proved:
+Where the prototype differs from this plan:
 
-- **The public form has not created a request.** Web-to-Case is on and accepts the form's posts, but the org created no case, and no error reached the org's logs. The cause is not known. Salesforce emails Web-to-Case failures to the Default Case Owner. Every step after the form was proved with requests created through the API.
-- **Requester emails come from flows, not email templates or an auto-response rule.** The six messages are text in the flows, and each email is logged on its request. Salesforce sends an email template only to a contact, lead, or person account, and a request has none. An auto-response rule needs a sending address in its definition, which would put an email address in this public repository.
-- **The New form for a request uses the profile's Case layout.** Assigning a layout to the Video Request record type is a profile change. The request record page does not depend on the layout.
+- **Requester emails come from flows, not email templates or an auto-response rule.** The six messages are text in the flows, sent from the address of the person whose action triggers them, and each email is logged on its request. Salesforce sends an email template only to a contact, lead, or person account, and a request has none. An auto-response rule needs a sending address in its definition, which would put an email address in this public repository.
 - **Team members submit ideas from the voting board.** Submit an idea files an Internal request in the triage queue.
-- **The org needs two Support Settings.** Salesforce requires a Default Case Owner and an Automated Case User before a Case assignment rule can exist.
-- **A vote belongs to an email address.** A qualified request without an email address casts no vote. A request typed with a team member's address turns that member's board vote into a request vote, which they cannot withdraw while the request stands. When a user's email address changes, their earlier board votes stay under the old address, so they can count twice until they withdraw one. Two users who share an address share one vote, and only the one who cast it can withdraw it. ADR 0009 replaces this for members in round 4.
+- **The board takes votes only on ideas.** The vote rules stay open until content is published, but the voting board lists Submitted content only. After acceptance a team member can neither vote nor withdraw a vote. A request linked to accepted content still casts one.
+- **The New form for a request uses the profile's Case layout.** Assigning a layout to the Video Request record type is a profile change. The request record page does not depend on the layout.
+- **The org needs two Support Settings.** Salesforce requires a Default Case Owner and an Automated Case User before a Case assignment rule can exist. The rule's second entry leaves every other case with its owner, so Nonprofit Cloud cases do not fall through to the Default Case Owner.
+
+Known limits:
+
+- **A vote belongs to an email address.** A qualified request without an email address casts no vote. A request typed with a team member's address turns that member's board vote into a request vote, which they cannot withdraw while the request stands. When a user's email address changes, their earlier board vote stays under the old address, and a request from the new address counts them again. Two users who share an address share one vote, and only the one who cast it can withdraw it. ADR 0009 replaces this for members in round 4.
 - **A user whose email address is longer than 80 characters cannot vote on the board.** The vote's email field holds 80 characters, and Salesforce will not widen it while votes exist, including deleted votes it has not yet purged. No user in the org has an address that long. If one appears before round 4, widen the field and the voter key together.
+- **Votes are not cast again when content reopens.** A request linked while its content was Declined, Published, or Retired casts no vote, and none appears if leadership later moves the content back.
+- **Deleting two requests from one address together can leave a vote behind.** When both point to the same content and are deleted in one operation, each sees the other and keeps the vote. Only an administrator can delete requests. Delete them one at a time, or delete the leftover vote: one whose source is Request, with no request from that address on that content.
+- **The trial org sends 15 emails a day.** Every receipt, triage, and publication email counts. Once they are used, triaging a request that has an email address fails with the reason, and the request stays New until the next day. A receipt or publication email is not sent, and the administrator gets Salesforce's flow error email. Triage the import after the allowance is raised, or a few requests a day.
 - **Salesforce's integration users can read every vote.** The Slack and Analytics integration users hold View All Data, which covers every object. Nobody signs in as them. Check what the Slack integration can show before round 3.
-- **Not proved: voting as someone with no access to votes.** The voting board's service gives team members no direct access to votes and works in system mode for them. Its tests run as the org's only user, a System Administrator, so they cannot show the difference. The configuration is checked instead: apart from View All Data holders, only Team Leadership can read votes.
+
+Not proved:
+
+- **The public form has not created a request.** Web-to-Case is on and queues the form's posts ("Your request has been queued"), but the org created no case, and no error reached the org's logs. The cause is not known. Salesforce emails Web-to-Case failures to the Default Case Owner. Every step after the form was proved with requests created through the API.
+- **Nothing has run as anyone but a System Administrator.** The org has one login. The voting board's service gives team members no direct access to votes and works in system mode for them; its tests run as the administrator, so they cannot show the difference. The configuration is checked instead: apart from View All Data holders, only Team Leadership can read votes. The profile team members will have is not chosen; the permission sets assume it grants no more on Case than they do.
+- **Publication to more than 10 requesters.** The publication email sends one email for each address in one transaction, and Salesforce limits some email sends to 10 a transaction. The largest test was two requesters.
+- **Web-to-Case posts that carry extra fields.** Before round 2 shows content publicly, check that a post naming Status or the content field cannot qualify itself.
 
 The working org is a Nonprofit Cloud trial on Enterprise Edition. Three facts about it shape the plan:
 
@@ -178,7 +190,7 @@ Each has a default that the build assumes until a convening decides.
 
 1. **Published and Retired as statuses.** The charter ends at Final Review. Default: add both.
 2. **No downvotes.** Default: upvote only.
-3. **Whether voting stays open after an idea is accepted.** Default: yes, until the content is published.
+3. **Whether voting stays open after an idea is accepted.** Default: yes, until the content is published. In round 1 only requests add votes after acceptance, because the voting board lists ideas. If the team confirms yes, the board gains accepted content.
 4. **Who may advance each status.** Default: any team member.
 5. **The Product list, and the Type lists for requests and for content.**
 6. **Where published content is hosted,** and what a published record must carry.
