@@ -14,7 +14,7 @@ The form is one page in this repository, published with GitHub Pages. The markup
 
 ## What this gives up
 
-- The email address is not verified. Request Count can be inflated by someone who types different addresses. See ADR 0003.
+- The email address is not verified. Someone who sends requests from different addresses can raise an idea's vote count, though each request must get past triage first. See ADR 0003.
 - There is no CAPTCHA. A checkbox CAPTCHA is a known barrier for screen reader users. Spam reaches the triage queue, and the Queue Manager closes it as Not Qualified.
 
 ## Consequences

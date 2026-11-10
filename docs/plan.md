@@ -22,7 +22,7 @@ An earlier design was prototyped in a Developer Edition org in November 2026 and
 4. For a request that is in scope, the Queue Manager checks whether content already exists. A prompt template suggests likely matches.
 5. If content exists, the request is linked to it. The requester is told where the content is, or that it is in progress.
 6. If no content exists, the Queue Manager creates a content record from the request. Its status is Submitted, which makes it an idea.
-7. Team members vote on ideas.
+7. Team members vote on ideas. Each qualified request also counts as one vote for its requester.
 8. At a convening, Team Leadership accepts or declines ideas. Accepted content joins the priority queue.
 9. Content moves through Drafting, Proofing, Production, Editing, and Final Review to Published. Everyone who asked for it gets an email when it is published.
 
@@ -63,8 +63,7 @@ Content is the custom object `HowToContent__c`.
 - **Drive Folder.** Required in Production, Editing, and Final Review.
 - **Scratch Track, Screen Recording, and Production Track Collected.** Three checkboxes. All are required in Editing and Final Review.
 - **Published Date.** Required when Published or Retired.
-- **Request Count.** The number of different requester email addresses, counted by DLRS.
-- **Vote Count.** A roll-up summary of votes.
+- **Vote Count.** The number of different people who asked for the content or voted for it. A roll-up summary of votes.
 - **Owner.** The holder. A Salesforce queue owns content that nobody holds yet.
 
 Content moves forward one status at a time from Drafting onward, and back any distance. Content that requests point to cannot be deleted.
@@ -73,7 +72,7 @@ Where published content is hosted is not decided. Round 1 has no link, player, o
 
 ### Vote
 
-A vote is the custom object `Vote__c`, a master-detail child of content. It has a lookup to the voter's user and the required, unique `Voter_Key__c`. See ADR 0003.
+A vote is the custom object `Vote__c`, a master-detail child of content. It holds the voter's email address, a lookup to the voter's user when they voted on the voting board, its source (a request or the voting board), and the required, unique `Voter_Key__c`. See ADR 0003.
 
 ### Automation
 
@@ -82,7 +81,7 @@ A vote is the custom object `Vote__c`, a master-detail child of content. It has 
 - Two flows run from the request page. One creates content from the request. The other links the request to existing content. Both show the duplicate check's suggestions.
 - A flow emails the requester when triage closes the request. There are four templates: logged as a new idea, here is the existing content, already in progress, and not qualified with the reason.
 - A flow emails every requester of a content record when it is published.
-- DLRS keeps Request Count current.
+- A flow casts a vote for the requester when triage qualifies a request. It moves or removes that vote if triage later links the request elsewhere or unlinks it.
 
 ### Screens
 
@@ -127,7 +126,6 @@ The people behind imported requests did not agree to have their names shown. Con
 
 The team should confirm each of these.
 
-- **A repeat request is counted as a request, not as a vote.** The whiteboard says "+1 vote". Content shows a Request Count and a Vote Count side by side. See ADR 0003.
 - **The requester gets an email where the whiteboard says to post on the case with Chatter or a comment.** A requester has no login to read a post.
 - **"In progress, follow here" has no link in round 1.** There is no public page to follow until round 2. The email says the request was counted.
 - **Triage decides scope, not acceptance.** The Queue Manager qualifies a request. Accepting an idea stays a unanimous leadership decision at a convening, as the charter says.
@@ -171,4 +169,4 @@ Each has a default that the build assumes until a convening decides.
 4. **Who may advance each status.** Default: any team member.
 5. **The Product list, and the Type lists for requests and for content.**
 6. **Where published content is hosted,** and what a published record must carry.
-7. **The four differences from the whiteboards,** listed above.
+7. **The three differences from the whiteboards,** listed above.

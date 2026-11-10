@@ -24,7 +24,7 @@ It gives up a tidy content list. Content records exist for ideas that leadership
 
 ## Consequences
 
-- The link is a lookup, not master-detail. Salesforce does not allow a standard object on the detail side. Roll-ups from requests to content use Declarative Lookup Rollup Summaries (DLRS).
+- The link is a lookup, not master-detail. Salesforce does not allow a standard object on the detail side, so requests cannot roll up to content. Instead, a qualified request casts a vote, which is a master-detail child of content. See ADR 0003.
 - A request is Qualified if and only if it points to content. A content record that requests point to cannot be deleted.
 - Rules on content depend on its status. The Drive folder and the three artifacts are required only in the production statuses. A champion is required before Accepted. A team response is required to decline.
 - Content moves forward one status at a time from Drafting onward, and back any distance.

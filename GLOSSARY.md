@@ -70,13 +70,13 @@ _Avoid_: Archive, unpublish, delete
 
 ### Demand
 
-**Request Count**:
-The number of different requesters whose requests point to one content record.
-_Avoid_: Votes (for this meaning), duplicates, hits
-
 **Vote**:
-One signed-in person's support for one idea. A person has at most one vote on an idea and can withdraw it.
+One person's support for one idea. A team member casts a vote by voting, and a qualified request casts one for its requester. A person has at most one vote on an idea, however many times they ask or vote.
 _Avoid_: Like, point, upvote (as a noun), request (for this meaning)
+
+**Vote Count**:
+The number of different people who have voted for one content record, including everyone whose request points to it. It is the only count of demand.
+_Avoid_: Request count, score, supporters
 
 ### Prioritization
 
