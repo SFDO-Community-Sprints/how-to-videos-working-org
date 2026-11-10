@@ -32,8 +32,11 @@
     <label>How-To Videos</label>
     <navType>Standard</navType>
     <tabs>standard-home</tabs>
-    <tabs>standard-Case</tabs>
+    <tabs>HowTo_Triage_Queue</tabs>
+    <tabs>HowTo_Priority_Queue</tabs>
     <tabs>HowToContent__c</tabs>
+    <tabs>standard-Case</tabs>
+    <tabs>standard-Task</tabs>
     <tabs>standard-report</tabs>
     <tabs>standard-Dashboard</tabs>
     <uiType>Lightning</uiType>

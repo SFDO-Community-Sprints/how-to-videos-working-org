@@ -63,6 +63,8 @@
     </types>
     <types>
         <members>HowToContent__c</members>
+        <members>HowTo_Priority_Queue</members>
+        <members>HowTo_Triage_Queue</members>
         <name>CustomTab</name>
     </types>
     <types>
@@ -73,7 +75,9 @@
     <types>
         <members>HowTo_Content_Record_Page</members>
         <members>HowTo_Home</members>
+        <members>HowTo_Priority_Queue_Page</members>
         <members>HowTo_Request_Record_Page</members>
+        <members>HowTo_Triage_Queue_Page</members>
         <name>FlexiPage</name>
     </types>
     <types>

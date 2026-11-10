@@ -143,4 +143,12 @@
         <tab>HowToContent__c</tab>
         <visibility>Visible</visibility>
     </tabSettings>
+    <tabSettings>
+        <tab>HowTo_Priority_Queue</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
+    <tabSettings>
+        <tab>HowTo_Triage_Queue</tab>
+        <visibility>Visible</visibility>
+    </tabSettings>
 </PermissionSet>
