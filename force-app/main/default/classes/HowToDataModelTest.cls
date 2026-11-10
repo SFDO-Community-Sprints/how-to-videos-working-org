@@ -226,6 +226,41 @@ private class HowToDataModelTest {
   }
 
   @IsTest
+  static void theAssignmentRuleLeavesOtherCasesWithTheirOwner() {
+    Database.DMLOptions useRule = new Database.DMLOptions();
+    useRule.assignmentRuleHeader.useDefaultRule = true;
+    Case npcCase = new Case(RecordTypeId = clientEngagement(), Status = 'New');
+    Database.insert(npcCase, useRule, AccessLevel.SYSTEM_MODE);
+    Case request = request('Recurring donations', 'a@example.com');
+    Database.insert(request, useRule, AccessLevel.SYSTEM_MODE);
+
+    Id triageQueue = [
+      SELECT Id
+      FROM Group
+      WHERE DeveloperName = 'HowTo_Triage_Queue' AND Type = 'Queue'
+    ]
+    .Id;
+    Map<Id, Case> saved = new Map<Id, Case>(
+      [
+        SELECT OwnerId
+        FROM Case
+        WHERE Id IN (:npcCase.Id, :request.Id)
+        WITH SYSTEM_MODE
+      ]
+    );
+    Assert.areEqual(
+      UserInfo.getUserId(),
+      saved.get(npcCase.Id).OwnerId,
+      'a Nonprofit Cloud case keeps its owner'
+    );
+    Assert.areEqual(
+      triageQueue,
+      saved.get(request.Id).OwnerId,
+      'a Video Request goes to the triage queue'
+    );
+  }
+
+  @IsTest
   static void onlyAVideoRequestCanPointToContent() {
     HowToContent__c c = content('Recurring donations');
     insert as system c;

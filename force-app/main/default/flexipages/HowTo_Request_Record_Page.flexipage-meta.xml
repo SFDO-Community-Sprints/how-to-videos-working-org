@@ -79,7 +79,7 @@
                         <valueListItems>
                             <value>Case.HowTo_Create_Content</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
                                 <criteria>
                                     <leftValue
                   >{!$Permission.CustomPermission.HowTo_Triage_Requests}</leftValue>
@@ -90,13 +90,19 @@
                                     <leftValue>{!Record.Status}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>New</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue
+                  >{!Record.RecordType.DeveloperName}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>HowTo_Video_Request</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
                         <valueListItems>
                             <value>Case.HowTo_Link_Content</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
                                 <criteria>
                                     <leftValue
                   >{!$Permission.CustomPermission.HowTo_Triage_Requests}</leftValue>
@@ -107,13 +113,19 @@
                                     <leftValue>{!Record.Status}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>New</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue
+                  >{!Record.RecordType.DeveloperName}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>HowTo_Video_Request</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>
                         <valueListItems>
                             <value>Case.HowTo_Mark_Not_Qualified</value>
                             <visibilityRule>
-                                <booleanFilter>1 AND 2</booleanFilter>
+                                <booleanFilter>1 AND 2 AND 3</booleanFilter>
                                 <criteria>
                                     <leftValue
                   >{!$Permission.CustomPermission.HowTo_Triage_Requests}</leftValue>
@@ -124,6 +136,12 @@
                                     <leftValue>{!Record.Status}</leftValue>
                                     <operator>EQUAL</operator>
                                     <rightValue>New</rightValue>
+                                </criteria>
+                                <criteria>
+                                    <leftValue
+                  >{!Record.RecordType.DeveloperName}</leftValue>
+                                    <operator>EQUAL</operator>
+                                    <rightValue>HowTo_Video_Request</rightValue>
                                 </criteria>
                             </visibilityRule>
                         </valueListItems>

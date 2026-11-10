@@ -390,7 +390,7 @@
         <fields>
             <name>Request_linked_text</name>
             <fieldText
-      >&lt;p&gt;The request is linked to {!Get_the_chosen_content.Name} and is Qualified. The requester was emailed.&lt;/p&gt;</fieldText>
+      >&lt;p&gt;The request is linked to {!Get_the_chosen_content.Name} and is Qualified. The requester is emailed if the request has an address.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>

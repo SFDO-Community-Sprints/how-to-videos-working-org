@@ -16,6 +16,8 @@ const rules = [
 let failures = 0;
 for (const file of process.argv.slice(2)) {
   const path = relative(process.cwd(), file);
+  // package-lock.json is skipped: npm writes it from public registry data, and a package's deprecation notice can carry
+  // its maintainer's contact address. Removing one by hand lasts only until npm resolves that package again.
   if (path.endsWith("package-lock.json") || !existsSync(file)) continue;
   const lines = readFileSync(file, "utf8").split("\n");
   for (const rule of rules) {

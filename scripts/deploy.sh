@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Validates the given source paths against howto-npc with the project's Apex tests, then quick-deploys.
-# The org cannot run RunLocalTests: four of Nonprofit Cloud's own classes have no tests and hold
-# org-wide coverage at 42%. So deploys run the project's tests, which cover every class and trigger we ship.
+# The org cannot run RunLocalTests: four classes that came with the org have no tests and hold
+# org-wide coverage below 75%. So deploys run the project's tests, which cover every class and trigger we ship.
 # Usage: scripts/deploy.sh <path> [<path> ...]
 set -euo pipefail
 org=howto-npc

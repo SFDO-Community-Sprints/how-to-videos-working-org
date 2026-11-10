@@ -4,7 +4,7 @@
     <isExposed>true</isExposed>
     <masterLabel>Voting Board</masterLabel>
     <description
-  >Lists the ideas with their vote and request totals, and lets the signed-in person vote or withdraw a vote.</description>
+  >Lists the ideas with their vote totals, lets the signed-in person vote or withdraw a vote, and opens Submit an idea.</description>
     <targets>
         <target>lightning__HomePage</target>
         <target>lightning__AppPage</target>

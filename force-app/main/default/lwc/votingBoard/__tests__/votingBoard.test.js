@@ -294,6 +294,57 @@ describe("c-voting-board", () => {
     expect(root(element).activeElement).toBe(submitButton(element));
   });
 
+  it("moves focus to the title when a vote turns out to come from the person's request", async () => {
+    castVote.mockResolvedValue({
+      ...ideas()[0],
+      votes: 2,
+      voted: true,
+      fromRequest: true
+    });
+    const element = await render();
+    buttons(element)[0].click();
+    await flush();
+    await flush();
+    expect(announcement(element)).toBe(
+      "Your request counts as your vote for Recurring donations. It has 2 votes."
+    );
+    expect(root(element).activeElement).toBe(
+      root(element).querySelector("li a")
+    );
+    expect(text(root(element).querySelectorAll("li")[0])).toContain(
+      "Your request counts as your vote."
+    );
+  });
+
+  it("says a vote still counts when withdrawing leaves another vote under the same address", async () => {
+    withdrawVote.mockResolvedValue({
+      ...ideas()[1],
+      votes: 1,
+      voted: true,
+      fromRequest: false
+    });
+    const element = await render();
+    buttons(element)[1].click();
+    await flush();
+    await flush();
+    expect(announcement(element)).toBe(
+      "Your vote for Volunteer shifts still counts. It has 1 vote."
+    );
+  });
+
+  it("shows the result of a vote on screen as well as announcing it", async () => {
+    castVote.mockRejectedValue({
+      body: { message: "Voting is closed for this content." }
+    });
+    const element = await render();
+    buttons(element)[0].click();
+    await flush();
+    await flush();
+    const status = root(element).querySelector('[role="status"]');
+    expect(status.classList.contains("slds-assistive-text")).toBe(false);
+    expect(text(status)).toContain("Voting is closed for this content.");
+  });
+
   it("says so when there are no ideas", async () => {
     getIdeas.mockResolvedValue([]);
     const element = await render();

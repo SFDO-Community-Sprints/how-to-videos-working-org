@@ -23,12 +23,20 @@ export default class VotingBoard extends LightningElement {
   announcement = "";
   submitting = false;
   focusAfterRender;
+  focusLinkId;
 
   connectedCallback() {
     this.load(false);
   }
 
   renderedCallback() {
+    if (this.focusLinkId) {
+      const link = this.template.querySelector(
+        `a[data-link-id="${this.focusLinkId}"]`
+      );
+      this.focusLinkId = undefined;
+      link?.focus();
+    }
     if (this.focusAfterRender) {
       const target = this.refs[this.focusAfterRender];
       this.focusAfterRender = undefined;
@@ -121,26 +129,39 @@ export default class VotingBoard extends LightningElement {
     if (!idea || this.busyIds.includes(id)) {
       return;
     }
+    const withdrawing = idea.voted;
     this.busyIds = [...this.busyIds, id];
     try {
-      const updated = idea.voted
+      const updated = withdrawing
         ? await withdrawVote({ contentId: id })
         : await castVote({ contentId: id });
       this.ideas = this.ideas.map((i) => (i.id === id ? updated : i));
-      const total = count(updated.votes, "vote", "votes");
-      this.announce(
-        updated.voted
-          ? `You voted for ${updated.title}. It has ${total}.`
-          : `You withdrew your vote for ${updated.title}. It has ${total}.`
-      );
+      this.announce(this.resultMessage(updated, withdrawing));
+      if (updated.fromRequest) {
+        // The button is replaced by text, so focus moves to the idea's title.
+        this.focusLinkId = id;
+      }
     } catch (error) {
-      const verb = idea.voted ? "withdrawal of your vote" : "vote";
+      const verb = withdrawing ? "withdrawal of your vote" : "vote";
       this.announce(
         `Your ${verb} for ${idea.title} was not recorded. ${messageFrom(error)}`
       );
     } finally {
       this.busyIds = this.busyIds.filter((b) => b !== id);
     }
+  }
+
+  resultMessage(updated, withdrawing) {
+    const total = count(updated.votes, "vote", "votes");
+    if (updated.fromRequest) {
+      return `Your request counts as your vote for ${updated.title}. It has ${total}.`;
+    }
+    if (withdrawing && updated.voted) {
+      return `Your vote for ${updated.title} still counts. It has ${total}.`;
+    }
+    return updated.voted
+      ? `You voted for ${updated.title}. It has ${total}.`
+      : `You withdrew your vote for ${updated.title}. It has ${total}.`;
   }
 
   // A live region speaks only when its text changes, so a repeated message gets a silent trailing space.

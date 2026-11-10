@@ -1,5 +1,5 @@
 // Creates made-up requests and content across the statuses, so the team has something to look at.
-// Safe to run again: content is matched by title, requests by title, and the board vote is upserted on its key.
+// Safe to run again: content is matched by title, requests by title, and the board vote is added only if absent.
 // Sends no email: seeded requests are never from the public form (no receipt), are saved already triaged
 // (the triage email fires only on an update), and content is saved already published.
 // The running user needs the How-To Team Leadership and Queue Manager groups
@@ -89,7 +89,11 @@ Database.insert(newRequests, toTriageQueue);
 // through the HowTo_Request_Vote flow (ADR 0003).
 Id ideaId = content.get('Track volunteer hours').Id;
 String myEmail = UserInfo.getUserEmail().toLowerCase();
-upsert new Vote__c(Content__c = ideaId, Voter__c = UserInfo.getUserId(), Voter_Email__c = myEmail,
-  Voter_Key__c = String.valueOf(ideaId) + myEmail, Source__c = 'Voting Board') Voter_Key__c;
+String sampleKey = String.valueOf(ideaId) + myEmail;
+// Insert only when absent: an existing vote may have become a request vote, which must stay one.
+if ([SELECT COUNT() FROM Vote__c WHERE Voter_Key__c = :sampleKey] == 0) {
+  insert new Vote__c(Content__c = ideaId, Voter__c = UserInfo.getUserId(), Voter_Email__c = myEmail,
+    Voter_Key__c = sampleKey, Source__c = 'Voting Board');
+}
 
 System.debug(LoggingLevel.ERROR, 'Created ' + newContent.size() + ' content and ' + newRequests.size() + ' requests.');

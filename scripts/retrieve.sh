@@ -13,5 +13,5 @@ for path in glob.glob("force-app/main/default/dashboards/**/*.dashboard-meta.xml
         open(path, "w").write(clean)
 PY
 npx prettier --write "force-app/**/*.{cls,trigger,xml,js,html,json}" manifest/package.xml >/dev/null
-node scripts/check-public.mjs $(git ls-files -mo --exclude-standard force-app manifest)
+git ls-files -mo --exclude-standard -z force-app manifest | xargs -0 node scripts/check-public.mjs
 echo "Retrieved. Review git status, then commit."

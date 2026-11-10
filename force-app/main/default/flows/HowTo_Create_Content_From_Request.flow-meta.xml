@@ -64,8 +64,24 @@
         </rules>
     </decisions>
     <description
-  >How-To Videos: the Queue Manager creates content from a request when no content exists for it. Shows the duplicate check, creates the content as an idea (Submitted) owned by the queue Content Awaiting a Holder, copies product, feature and champion from the request, then marks the request Qualified and linked. Runs in system mode with sharing so it can copy the champion, which only Team Leadership can edit by hand; it checks the Triage Requests permission first.</description>
+  >How-To Videos: the Queue Manager creates content from a request when no content exists for it. Shows the duplicate check, creates the content as an idea (Submitted) owned by the queue Content Awaiting a Holder, copies product, feature and champion from the request (no champion from an imported request), then marks the request Qualified and linked. Runs in system mode with sharing so it can copy the champion, which only Team Leadership can edit by hand; it checks the Triage Requests permission first.</description>
     <environments>Default</environments>
+    <formulas>
+        <description
+    >Blank for an imported request: those requesters have not agreed to be named (plan, What already exists).</description>
+        <name>Champion_email_from_request</name>
+        <dataType>String</dataType>
+        <expression
+    >IF(TEXT({!Get_the_request.Origin}) = &quot;Import&quot;, &quot;&quot;, {!Get_the_request.SuppliedEmail})</expression>
+    </formulas>
+    <formulas>
+        <description
+    >Blank for an imported request: those requesters have not agreed to be named (plan, What already exists).</description>
+        <name>Champion_name_from_request</name>
+        <dataType>String</dataType>
+        <expression
+    >IF(TEXT({!Get_the_request.Origin}) = &quot;Import&quot;, &quot;&quot;, {!Get_the_request.SuppliedName})</expression>
+    </formulas>
     <formulas>
         <name>Title_from_request</name>
         <dataType>String</dataType>
@@ -107,15 +123,13 @@
         <inputAssignments>
             <field>Champion_Email__c</field>
             <value>
-                <elementReference
-        >Get_the_request.SuppliedEmail</elementReference>
+                <elementReference>Champion_email_from_request</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
             <field>Champion_Name__c</field>
             <value>
-                <elementReference
-        >Get_the_request.SuppliedName</elementReference>
+                <elementReference>Champion_name_from_request</elementReference>
             </value>
         </inputAssignments>
         <inputAssignments>
@@ -230,6 +244,7 @@
         <queriedFields>HowTo_Feature__c</queriedFields>
         <queriedFields>Status</queriedFields>
         <queriedFields>RecordTypeId</queriedFields>
+        <queriedFields>Origin</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordRollbacks>
@@ -315,7 +330,7 @@
         <fields>
             <name>Content_created_text</name>
             <fieldText
-      >&lt;p&gt;Content created: {!Title}. It is an idea now, waiting for a holder. The request is Qualified, and the requester was emailed.&lt;/p&gt;</fieldText>
+      >&lt;p&gt;Content created: {!Title}. It is an idea now, waiting for a holder. The request is Qualified, and the requester is emailed if the request has an address.&lt;/p&gt;</fieldText>
             <fieldType>DisplayText</fieldType>
             <styleProperties>
                 <verticalAlignment>
