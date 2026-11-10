@@ -2,12 +2,22 @@
 <Package xmlns="http://soap.sforce.com/2006/04/metadata">
     <types>
         <members>HowToDataModelTest</members>
+        <members>VotingBoardService</members>
+        <members>VotingBoardServiceTest</members>
         <members>dlrs_CaseTest</members>
         <name>ApexClass</name>
     </types>
     <types>
         <members>dlrs_CaseTrigger</members>
         <name>ApexTrigger</name>
+    </types>
+    <types>
+        <members>Case.HowTo_Video_Requests</members>
+        <name>AssignmentRule</name>
+    </types>
+    <types>
+        <members>Case</members>
+        <name>AssignmentRules</name>
     </types>
     <types>
         <members>Case.HowTo_Video_Request</members>
@@ -51,11 +61,30 @@
     </types>
     <types>
         <members>HowTo_Decide_Ideas</members>
+        <members>HowTo_Triage_Requests</members>
         <name>CustomPermission</name>
+    </types>
+    <types>
+        <members>HowTo_Content_Published_Email</members>
+        <members>HowTo_Create_Content_From_Request</members>
+        <members>HowTo_Duplicate_Check_Run</members>
+        <members>HowTo_Link_Request_To_Content</members>
+        <members>HowTo_Request_No_Contact</members>
+        <members>HowTo_Request_Received_Email</members>
+        <members>HowTo_Request_Triage_Email</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>HowTo_Duplicate_Check</members>
+        <name>GenAiPromptTemplate</name>
     </types>
     <types>
         <members>HowTo_Product</members>
         <name>GlobalValueSet</name>
+    </types>
+    <types>
+        <members>votingBoard</members>
+        <name>LightningComponentBundle</name>
     </types>
     <types>
         <members

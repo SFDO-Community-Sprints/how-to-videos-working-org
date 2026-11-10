@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customPermissions>
+        <enabled>true</enabled>
+        <name>HowTo_Triage_Requests</name>
+    </customPermissions>
     <description
   >How-To Videos: triage requests (link to content, set status and reason), change Queue Position, and run the duplicate check prompt template.</description>
     <fieldPermissions>

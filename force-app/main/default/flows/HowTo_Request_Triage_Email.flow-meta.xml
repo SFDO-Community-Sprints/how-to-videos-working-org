@@ -1,0 +1,395 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description
+    >Sends from the running user, the Queue Manager. Logged on the request.</description>
+        <name>Email_the_requester</name>
+        <label>Email the requester</label>
+        <locationX>600</locationX>
+        <locationY>700</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <faultConnector>
+            <targetReference>Email_failed</targetReference>
+        </faultConnector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.SuppliedEmail</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>emailSubject</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>emailBody</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>68.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Tell_existing</name>
+        <label>Tell: here is the existing content</label>
+        <locationX>400</locationX>
+        <locationY>500</locationY>
+        <assignmentItems>
+            <assignToReference>emailSubject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Existing_subject</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>emailBody</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Existing_body</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Email_the_requester</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Tell_in_progress</name>
+        <label>Tell: already asked for</label>
+        <locationX>800</locationX>
+        <locationY>500</locationY>
+        <assignmentItems>
+            <assignToReference>emailSubject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>In_progress_subject</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>emailBody</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>In_progress_body</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Email_the_requester</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Tell_new_idea</name>
+        <label>Tell: logged as a new idea</label>
+        <locationX>600</locationX>
+        <locationY>500</locationY>
+        <assignmentItems>
+            <assignToReference>emailSubject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>New_idea_subject</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>emailBody</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>New_idea_body</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Email_the_requester</targetReference>
+        </connector>
+    </assignments>
+    <assignments>
+        <name>Tell_not_qualified</name>
+        <label>Tell: not qualified, with the reason</label>
+        <locationX>176</locationX>
+        <locationY>500</locationY>
+        <assignmentItems>
+            <assignToReference>emailSubject</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Not_qualified_subject</elementReference>
+            </value>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>emailBody</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>Not_qualified_body</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>Email_the_requester</targetReference>
+        </connector>
+    </assignments>
+    <customErrors>
+        <description
+    >A request is triaged only when the requester has been told, so a failed email stops the save and shows the Queue Manager why.</description>
+        <name>Email_failed</name>
+        <label>Email failed</label>
+        <locationX>900</locationX>
+        <locationY>700</locationY>
+        <customErrorMessages>
+            <errorMessage
+      >The email to the requester could not be sent, so the request was not triaged. Try again. The error was: {!$Flow.FaultMessage}</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <customErrors>
+        <name>Lookup_failed</name>
+        <label>Lookup failed</label>
+        <locationX>900</locationX>
+        <locationY>300</locationY>
+        <customErrorMessages>
+            <errorMessage
+      >The request could not be triaged because its other requests could not be read. The error was: {!$Flow.FaultMessage}</errorMessage>
+            <isFieldError>false</isFieldError>
+        </customErrorMessages>
+    </customErrors>
+    <decisions>
+        <name>Qualified_or_not</name>
+        <label>Qualified or not?</label>
+        <locationX>380</locationX>
+        <locationY>180</locationY>
+        <defaultConnector>
+            <targetReference>Get_an_earlier_request</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Qualified</defaultConnectorLabel>
+        <rules>
+            <name>Not_qualified</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>$Record.Status</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Not Qualified</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Tell_not_qualified</targetReference>
+            </connector>
+            <label>Not qualified</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <description
+    >Published content: here it is. Otherwise, if this is the only request for an idea, the idea is new. Anything else is already asked for or in progress.</description>
+        <name>Which_message</name>
+        <label>Which message?</label>
+        <locationX>600</locationX>
+        <locationY>380</locationY>
+        <defaultConnector>
+            <targetReference>Tell_in_progress</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Already asked for</defaultConnectorLabel>
+        <rules>
+            <name>Published</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference
+        >$Record.HowTo_Content__r.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Published</stringValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Tell_existing</targetReference>
+            </connector>
+            <label>Published</label>
+        </rules>
+        <rules>
+            <name>New_idea</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference
+        >$Record.HowTo_Content__r.Status__c</leftValueReference>
+                <operator>EqualTo</operator>
+                <rightValue>
+                    <stringValue>Submitted</stringValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>Get_an_earlier_request</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Tell_new_idea</targetReference>
+            </connector>
+            <label>New idea</label>
+        </rules>
+    </decisions>
+    <description
+  >How-To Videos: emails the requester when triage closes a request. Four messages: logged as a new idea, here is the existing content, already asked for, and not qualified with the reason. The email is logged on the request. If it cannot be sent, the triage is not saved.</description>
+    <environments>Default</environments>
+    <interviewLabel
+  >How-To triage email {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>How-To: Triage Email</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <description
+    >Another qualified request that points to the same content. If there is none, this request created the idea.</description>
+        <name>Get_an_earlier_request</name>
+        <label>Get an earlier request</label>
+        <locationX>600</locationX>
+        <locationY>280</locationY>
+        <assignNullValuesIfNoRecordsFound
+    >true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Which_message</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Lookup_failed</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>HowTo_Content__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.HowTo_Content__c</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Id</field>
+            <operator>NotEqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Case</object>
+        <queriedFields>Id</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Qualified_or_not</targetReference>
+        </connector>
+        <filterFormula
+    >AND({!$Record.RecordType.DeveloperName} = &quot;HowTo_Video_Request&quot;, ISCHANGED({!$Record.Status}), OR(ISPICKVAL({!$Record.Status}, &quot;Qualified&quot;), ISPICKVAL({!$Record.Status}, &quot;Not Qualified&quot;)), NOT(ISBLANK({!$Record.SuppliedEmail})))</filterFormula>
+        <object>Case</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>Existing_body</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Hello {!$Record.SuppliedName},
+
+Thank you for your request &quot;{!$Record.Subject}&quot;. The Nonprofit How-To Series has already published content that covers it: &quot;{!$Record.HowTo_Content__r.Name}&quot;. Look for that title in the series.
+
+We have counted your request with that content.
+
+The Nonprofit How-To Series</text>
+    </textTemplates>
+    <textTemplates>
+        <name>Existing_subject</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text
+    >Content for your request already exists: {!$Record.HowTo_Content__r.Name}</text>
+    </textTemplates>
+    <textTemplates>
+        <name>In_progress_body</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Hello {!$Record.SuppliedName},
+
+Thank you for your request &quot;{!$Record.Subject}&quot;. Someone has already asked for this, as &quot;{!$Record.HowTo_Content__r.Name}&quot;, and the team has it on its list. We have counted your request with theirs.
+
+We will email you when the content is published.
+
+The Nonprofit How-To Series</text>
+    </textTemplates>
+    <textTemplates>
+        <name>In_progress_subject</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Your request was counted: {!$Record.HowTo_Content__r.Name}</text>
+    </textTemplates>
+    <textTemplates>
+        <name>New_idea_body</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Hello {!$Record.SuppliedName},
+
+Thank you for your request &quot;{!$Record.Subject}&quot;. It is in scope, and it is now an idea for the team to consider, as &quot;{!$Record.HowTo_Content__r.Name}&quot;.
+
+Team members vote on ideas, and the team&apos;s leadership decides at a convening which ideas the team will make. We will email you when the content is published.
+
+The Nonprofit How-To Series</text>
+    </textTemplates>
+    <textTemplates>
+        <name>New_idea_subject</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text
+    >Your request is now an idea: {!$Record.HowTo_Content__r.Name}</text>
+    </textTemplates>
+    <textTemplates>
+        <name>Not_qualified_body</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Hello {!$Record.SuppliedName},
+
+Thank you for your request &quot;{!$Record.Subject}&quot;. The team will not make content for it. The reason:
+
+{!$Record.HowTo_Not_Qualified_Reason__c}
+
+The Nonprofit How-To Series</text>
+    </textTemplates>
+    <textTemplates>
+        <name>Not_qualified_subject</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>About your request: {!$Record.Subject}</text>
+    </textTemplates>
+    <variables>
+        <name>emailBody</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+    <variables>
+        <name>emailSubject</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>

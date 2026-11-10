@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description
+    >Sends from the user who published the content. Logged on the request.</description>
+        <name>Email_this_requester</name>
+        <label>Email this requester</label>
+        <locationX>400</locationX>
+        <locationY>500</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <connector>
+            <targetReference>Remember_this_address</targetReference>
+        </connector>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference
+        >For_each_request.SuppliedEmail</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>Published_subject</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>Published_body</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
+            <value>
+                <elementReference>For_each_request.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>68.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Remember_this_address</name>
+        <label>Remember this address</label>
+        <locationX>400</locationX>
+        <locationY>620</locationY>
+        <assignmentItems>
+            <assignToReference>previousEmail</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>This_email_lowercase</elementReference>
+            </value>
+        </assignmentItems>
+        <connector>
+            <targetReference>For_each_request</targetReference>
+        </connector>
+    </assignments>
+    <decisions>
+        <description
+    >Requests are sorted by email address, so a repeat address follows the first one. Each person gets one email.</description>
+        <name>New_address</name>
+        <label>New address?</label>
+        <locationX>400</locationX>
+        <locationY>380</locationY>
+        <defaultConnector>
+            <targetReference>For_each_request</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>Already emailed</defaultConnectorLabel>
+        <rules>
+            <name>Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>This_email_lowercase</leftValueReference>
+                <operator>NotEqualTo</operator>
+                <rightValue>
+                    <elementReference>previousEmail</elementReference>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Email_this_requester</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description
+  >How-To Videos: when content is published, emails everyone whose request points to it, once per email address, and logs the email on their request. Runs after the content is saved, so a failed email never blocks publishing; a failure reaches the admin as a flow error email.</description>
+    <environments>Default</environments>
+    <formulas>
+        <name>This_email_lowercase</name>
+        <dataType>String</dataType>
+        <expression>LOWER({!For_each_request.SuppliedEmail})</expression>
+    </formulas>
+    <interviewLabel
+  >How-To content published {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>How-To: Content Published Email</label>
+    <loops>
+        <name>For_each_request</name>
+        <label>For each request</label>
+        <locationX>176</locationX>
+        <locationY>380</locationY>
+        <collectionReference>Get_the_requests</collectionReference>
+        <iterationOrder>Asc</iterationOrder>
+        <nextValueConnector>
+            <targetReference>New_address</targetReference>
+        </nextValueConnector>
+    </loops>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_the_requests</name>
+        <label>Get the requests</label>
+        <locationX>176</locationX>
+        <locationY>260</locationY>
+        <assignNullValuesIfNoRecordsFound
+    >false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>For_each_request</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>HowTo_Content__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>SuppliedEmail</field>
+            <operator>IsNull</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <getFirstRecordOnly>false</getFirstRecordOnly>
+        <object>Case</object>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>SuppliedEmail</queriedFields>
+        <queriedFields>SuppliedName</queriedFields>
+        <queriedFields>Subject</queriedFields>
+        <sortField>SuppliedEmail</sortField>
+        <sortOrder>Asc</sortOrder>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <doesRequireRecordChangedToMeetCriteria
+    >true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Status__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Published</stringValue>
+            </value>
+        </filters>
+        <object>HowToContent__c</object>
+        <recordTriggerType>Update</recordTriggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Get_the_requests</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>Published_body</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Hello {!For_each_request.SuppliedName},
+
+You asked the Nonprofit How-To Series for &quot;{!For_each_request.Subject}&quot;. The content for it is now published, as &quot;{!$Record.Name}&quot;. Look for that title in the series.
+
+Thank you for asking.
+
+The Nonprofit How-To Series</text>
+    </textTemplates>
+    <textTemplates>
+        <name>Published_subject</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Published: {!$Record.Name}</text>
+    </textTemplates>
+    <variables>
+        <name>previousEmail</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+    </variables>
+</Flow>
