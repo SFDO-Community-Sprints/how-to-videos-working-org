@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Content_Artifacts_Required</fullName>
+    <active>true</active>
+    <description
+  >All three artifacts are required in Editing and Final Review.</description>
+    <errorConditionFormula
+  >AND(OR(ISPICKVAL(Status__c, &quot;Editing&quot;), ISPICKVAL(Status__c, &quot;Final Review&quot;)), NOT(AND(Scratch_Track_Collected__c, Screen_Recording_Collected__c, Production_Track_Collected__c)))</errorConditionFormula>
+    <errorDisplayField>Status__c</errorDisplayField>
+    <errorMessage
+  >Collect the scratch track, the screen recording, and the production track before moving content to Editing.</errorMessage>
+</ValidationRule>

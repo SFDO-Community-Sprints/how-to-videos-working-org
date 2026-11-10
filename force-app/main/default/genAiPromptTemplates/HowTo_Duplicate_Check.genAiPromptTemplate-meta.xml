@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GenAiPromptTemplate xmlns="http://soap.sforce.com/2006/04/metadata">
+    <activeVersionIdentifier
+  >yApiB/45x0qjdQpNR2I9c82+FcfFGda9WBy7Nuvtuz0=_1</activeVersionIdentifier>
+    <description
+  >How-To Videos: at triage, suggests existing content that a new request may duplicate (ADR 0005). Receives only the request&apos;s title and description, never the requester&apos;s name or email. It suggests; the Queue Manager decides.</description>
+    <developerName>HowTo_Duplicate_Check</developerName>
+    <masterLabel>How-To Duplicate Check</masterLabel>
+    <overridable>false</overridable>
+    <templateVersions>
+        <content
+    >You help the Nonprofit How-To Series triage requests for how-to content. Compare one new request with the list of existing content, and suggest which existing content, if any, already covers what the request asks for. Match on meaning, not on wording. For example, &quot;How do I set up recurring donations&quot; matches &quot;Walkthrough of Enhanced Recurring Donations configuration&quot;.
+
+New request title: {!$Input:requestTitle}
+New request description: {!$Input:requestDescription}
+
+Existing content, one per line, as the title followed by its status in square brackets:
+{!$Input:contentTitles}
+
+Reply in plain text with no formatting. List at most five likely matches, best first, one per line. Write each as the exact title from the list, then a colon, then one short sentence that says why it matches. If nothing in the list is a likely match, reply with exactly: No likely matches.
+</content>
+        <inputs>
+            <apiName>requestTitle</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>Request title</masterLabel>
+            <referenceName>Input:requestTitle</referenceName>
+            <required>true</required>
+        </inputs>
+        <inputs>
+            <apiName>requestDescription</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>Request description</masterLabel>
+            <referenceName>Input:requestDescription</referenceName>
+            <required>false</required>
+        </inputs>
+        <inputs>
+            <apiName>contentTitles</apiName>
+            <definition>primitive://String</definition>
+            <masterLabel>Existing content titles</masterLabel>
+            <referenceName>Input:contentTitles</referenceName>
+            <required>true</required>
+        </inputs>
+        <isCitationEnabled>false</isCitationEnabled>
+        <primaryModel>sfdc_ai__DefaultOpenAIGPT4OmniMini</primaryModel>
+        <status>Published</status>
+        <versionIdentifier
+    >yApiB/45x0qjdQpNR2I9c82+FcfFGda9WBy7Nuvtuz0=_1</versionIdentifier>
+    </templateVersions>
+    <type>einstein_gpt__flex</type>
+    <visibility>Global</visibility>
+</GenAiPromptTemplate>

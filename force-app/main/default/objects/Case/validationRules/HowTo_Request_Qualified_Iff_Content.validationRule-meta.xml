@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HowTo_Request_Qualified_Iff_Content</fullName>
+    <active>true</active>
+    <description
+  >How-To Videos: a request is Qualified if and only if it points to content.</description>
+    <errorConditionFormula
+  >AND(RecordType.DeveloperName = &quot;HowTo_Video_Request&quot;, ISPICKVAL(Status, &quot;Qualified&quot;) &lt;&gt; NOT(ISBLANK(HowTo_Content__c)))</errorConditionFormula>
+    <errorMessage
+  >A request is Qualified exactly when it points to content. Set both Status and Content, or neither.</errorMessage>
+</ValidationRule>

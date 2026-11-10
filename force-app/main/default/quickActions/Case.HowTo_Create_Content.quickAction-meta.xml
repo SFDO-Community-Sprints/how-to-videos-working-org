@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >How-To Videos triage: Promotes this request to a new idea on the voting board, after the duplicate check.</description>
+    <flowDefinition>HowTo_Create_Content_From_Request</flowDefinition>
+    <label>Promote to Idea</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>

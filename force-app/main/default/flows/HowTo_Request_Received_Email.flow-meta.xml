@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionCalls>
+        <description
+    >Sends from the running user. For the public form that is the Automated Case User in Support Settings. Logged on the request.</description>
+        <name>Email_the_requester</name>
+        <label>Email the requester</label>
+        <locationX>176</locationX>
+        <locationY>276</locationY>
+        <actionName>emailSimple</actionName>
+        <actionType>emailSimple</actionType>
+        <flowTransactionModel>CurrentTransaction</flowTransactionModel>
+        <inputParameters>
+            <name>emailAddresses</name>
+            <value>
+                <elementReference>$Record.SuppliedEmail</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailSubject</name>
+            <value>
+                <elementReference>Subject_text</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>emailBody</name>
+            <value>
+                <elementReference>Body_text</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>relatedRecordId</name>
+            <value>
+                <elementReference>$Record.Id</elementReference>
+            </value>
+        </inputParameters>
+        <inputParameters>
+            <name>logEmailOnSend</name>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </inputParameters>
+        <nameSegment>emailSimple</nameSegment>
+    </actionCalls>
+    <apiVersion>68.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <description
+  >How-To Videos: emails the requester on receipt of a request from the public form (Origin Community). Runs after the request is saved, so a failed email never loses the request; a failure reaches the admin as a flow error email. Requests entered by the team or imported get no receipt.</description>
+    <environments>Default</environments>
+    <interviewLabel
+  >How-To request received {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>How-To: Request Received Email</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <filterFormula
+    >AND({!$Record.RecordType.DeveloperName} = &quot;HowTo_Video_Request&quot;, ISPICKVAL({!$Record.Origin}, &quot;Community&quot;), NOT(ISBLANK({!$Record.SuppliedEmail})))</filterFormula>
+        <object>Case</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <scheduledPaths>
+            <connector>
+                <targetReference>Email_the_requester</targetReference>
+            </connector>
+            <pathType>AsyncAfterCommit</pathType>
+        </scheduledPaths>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
+    <textTemplates>
+        <name>Body_text</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>Hello {!$Record.SuppliedName},
+
+Thank you for asking the Nonprofit How-To Series for content. We received your request &quot;{!$Record.Subject}&quot;.
+
+What happens next: a member of the team checks every new request. When we have checked yours, we will email you to say whether it is in scope and whether content for it already exists.
+
+If the team accepts your idea, your name may be shown with it.
+
+The Nonprofit How-To Series</text>
+    </textTemplates>
+    <textTemplates>
+        <name>Subject_text</name>
+        <isViewedAsPlainText>true</isViewedAsPlainText>
+        <text>We received your request: {!$Record.Subject}</text>
+    </textTemplates>
+</Flow>

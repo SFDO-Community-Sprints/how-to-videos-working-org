@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<QuickAction xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >How-To Videos triage: Adds this request to content that already exists, after the duplicate check.</description>
+    <flowDefinition>HowTo_Link_Request_To_Content</flowDefinition>
+    <label>Add to Existing Content</label>
+    <optionsCreateFeedItem>false</optionsCreateFeedItem>
+    <type>Flow</type>
+</QuickAction>

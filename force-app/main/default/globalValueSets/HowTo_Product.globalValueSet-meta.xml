@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<GlobalValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <customValue>
+        <fullName>Agentforce Nonprofit</fullName>
+        <default>false</default>
+        <label>Agentforce Nonprofit</label>
+    </customValue>
+    <customValue>
+        <fullName>Nonprofit Success Pack</fullName>
+        <default>false</default>
+        <label>Nonprofit Success Pack</label>
+    </customValue>
+    <customValue>
+        <fullName>Program Management Module</fullName>
+        <default>false</default>
+        <label>Program Management Module</label>
+    </customValue>
+    <customValue>
+        <fullName>Volunteers for Salesforce</fullName>
+        <default>false</default>
+        <label>Volunteers for Salesforce</label>
+    </customValue>
+    <customValue>
+        <fullName>Outbound Funds Module</fullName>
+        <default>false</default>
+        <label>Outbound Funds Module</label>
+    </customValue>
+    <customValue>
+        <fullName>Salesforce Platform</fullName>
+        <default>false</default>
+        <label>Salesforce Platform</label>
+    </customValue>
+    <customValue>
+        <fullName>Other</fullName>
+        <default>false</default>
+        <label>Other</label>
+    </customValue>
+    <description
+  >The products that requests and content are about. Shared by Case.HowTo_Product__c and HowToContent__c.Product__c. A starting list; the team sets the final one.</description>
+    <masterLabel>How-To Product</masterLabel>
+    <sorted>false</sorted>
+</GlobalValueSet>

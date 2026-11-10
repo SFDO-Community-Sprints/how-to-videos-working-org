@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<CustomTab xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description
+  >How-To Videos: the new requests that wait for triage (Case list view Triage Queue).</description>
+    <flexiPage>HowTo_Triage_Queue_Page</flexiPage>
+    <label>Triage Queue</label>
+    <motif>Custom13: Box</motif>
+</CustomTab>

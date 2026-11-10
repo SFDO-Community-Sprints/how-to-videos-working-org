@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Content_Status_Order</fullName>
+    <active>true</active>
+    <description
+  >Forward moves into Drafting or any later status must come from the status just before it. Moves back are allowed any distance. Declined ranks 0, so it is never a forward move. New records are not checked, so migrated content can start at any status.</description>
+    <errorConditionFormula
+  >AND(NOT(ISNEW()), ISCHANGED(Status__c), CASE(TEXT(Status__c), &quot;Submitted&quot;, 1, &quot;Accepted&quot;, 2, &quot;Drafting&quot;, 3, &quot;Proofing&quot;, 4, &quot;Production&quot;, 5, &quot;Editing&quot;, 6, &quot;Final Review&quot;, 7, &quot;Published&quot;, 8, &quot;Retired&quot;, 9, 0) &gt;= 3, CASE(TEXT(Status__c), &quot;Submitted&quot;, 1, &quot;Accepted&quot;, 2, &quot;Drafting&quot;, 3, &quot;Proofing&quot;, 4, &quot;Production&quot;, 5, &quot;Editing&quot;, 6, &quot;Final Review&quot;, 7, &quot;Published&quot;, 8, &quot;Retired&quot;, 9, 0) &gt; CASE(TEXT(PRIORVALUE(Status__c)), &quot;Submitted&quot;, 1, &quot;Accepted&quot;, 2, &quot;Drafting&quot;, 3, &quot;Proofing&quot;, 4, &quot;Production&quot;, 5, &quot;Editing&quot;, 6, &quot;Final Review&quot;, 7, &quot;Published&quot;, 8, &quot;Retired&quot;, 9, 0) + 1)</errorConditionFormula>
+    <errorDisplayField>Status__c</errorDisplayField>
+    <errorMessage
+  >From Drafting onward, content moves forward one status at a time. Choose the next status after the current one, or any earlier status.</errorMessage>
+</ValidationRule>

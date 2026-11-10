@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>68.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Clear_contact_and_account</name>
+        <label>Clear contact and account</label>
+        <locationX>176</locationX>
+        <locationY>276</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.ContactId</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+        <assignmentItems>
+            <assignToReference>$Record.AccountId</assignToReference>
+            <operator>Assign</operator>
+        </assignmentItems>
+    </assignments>
+    <description
+  >How-To Videos: a request has no Contact and no Account (ADR 0001). Web-to-Case links a new case to a Contact whose email matches, which would tie requests to Nonprofit Cloud constituents. This clears both before a new Video Request is saved.</description>
+    <environments>Default</environments>
+    <interviewLabel
+  >How-To request has no contact {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>How-To: Request Has No Contact</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>50</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Clear_contact_and_account</targetReference>
+        </connector>
+        <filterFormula
+    >AND({!$Record.RecordType.DeveloperName} = &quot;HowTo_Video_Request&quot;, OR(NOT(ISBLANK({!$Record.ContactId})), NOT(ISBLANK({!$Record.AccountId}))))</filterFormula>
+        <object>Case</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
+</Flow>

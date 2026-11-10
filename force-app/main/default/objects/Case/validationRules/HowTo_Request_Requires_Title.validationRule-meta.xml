@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HowTo_Request_Requires_Title</fullName>
+    <active>true</active>
+    <description
+  >How-To Videos: Case ignores required on Subject, so a Video Request needs this rule to require a title.</description>
+    <errorConditionFormula
+  >AND(RecordType.DeveloperName = &quot;HowTo_Video_Request&quot;, ISBLANK(Subject))</errorConditionFormula>
+    <errorDisplayField>Subject</errorDisplayField>
+    <errorMessage>A request needs a title. Enter it in Subject.</errorMessage>
+</ValidationRule>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Content_Queue_Position_Positive</fullName>
+    <active>true</active>
+    <description
+  >Queue Position starts at 1, which is produced first.</description>
+    <errorConditionFormula
+  >AND(NOT(ISBLANK(Queue_Position__c)), Queue_Position__c &lt; 1)</errorConditionFormula>
+    <errorDisplayField>Queue_Position__c</errorDisplayField>
+    <errorMessage
+  >Queue Position starts at 1. Position 1 is produced first.</errorMessage>
+</ValidationRule>

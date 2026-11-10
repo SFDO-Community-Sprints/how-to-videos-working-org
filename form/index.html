@@ -1,0 +1,140 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ask for how-to content | Nonprofit How-To Series</title>
+    <link rel="stylesheet" href="form.css" />
+  </head>
+  <body>
+    <main>
+      <h1>Ask for how-to content</h1>
+      <p>
+        The Nonprofit How-To Series makes short videos for nonprofit Salesforce
+        users and admins. Tell us what you would like to see. A member of the
+        team reads every request, and we email you when we have checked it.
+      </p>
+      <p>All fields are required unless they say they are optional.</p>
+
+      <!--
+        Posts to Salesforce Web-to-Case. The request becomes a Case with the Video Request record type and the
+        origin Community, and an assignment rule puts it in the triage queue.
+        orgid is the working org's ID. recordType is the Video Request record type.
+        The two 00N names are the Case fields HowTo_Product__c and HowTo_Feature__c.
+        Product values must match the How-To Product value set exactly, or Salesforce drops the request.
+      -->
+      <form
+        action="https://webto.salesforce.com/servlet/servlet.WebToCase?encoding=UTF-8"
+        method="post"
+      >
+        <input type="hidden" name="orgid" value="00DkP000000WCMF" />
+        <input
+          type="hidden"
+          name="retURL"
+          value="https://sfdo-community-sprints.github.io/how-to-videos-working-org/form/thanks.html"
+        />
+        <input type="hidden" name="recordType" value="012kP0000007BTNQA2" />
+        <input type="hidden" name="origin" value="Community" />
+        <input type="hidden" name="type" value="New content" />
+
+        <div class="field">
+          <label for="name">Your name</label>
+          <input
+            id="name"
+            name="name"
+            type="text"
+            maxlength="80"
+            autocomplete="name"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="email">Your email address</label>
+          <p class="hint" id="email-hint">
+            We use it only to tell you what happens to your request.
+          </p>
+          <input
+            id="email"
+            name="email"
+            type="email"
+            maxlength="80"
+            autocomplete="email"
+            aria-describedby="email-hint"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="subject">What should the content be called?</label>
+          <p class="hint" id="subject-hint">
+            A short title, for example "Set up recurring donations".
+          </p>
+          <input
+            id="subject"
+            name="subject"
+            type="text"
+            maxlength="255"
+            aria-describedby="subject-hint"
+            required
+          />
+        </div>
+
+        <div class="field">
+          <label for="description">What would you like to learn?</label>
+          <p class="hint" id="description-hint">
+            Describe the task, and what you have tried or found confusing.
+          </p>
+          <textarea
+            id="description"
+            name="description"
+            rows="6"
+            aria-describedby="description-hint"
+            required
+          ></textarea>
+        </div>
+
+        <div class="field">
+          <label for="product">Product (optional)</label>
+          <select id="product" name="00NkP0000047WLt">
+            <option value="">Not sure</option>
+            <option value="Agentforce Nonprofit">Agentforce Nonprofit</option>
+            <option value="Nonprofit Success Pack">
+              Nonprofit Success Pack
+            </option>
+            <option value="Program Management Module">
+              Program Management Module
+            </option>
+            <option value="Volunteers for Salesforce">
+              Volunteers for Salesforce
+            </option>
+            <option value="Outbound Funds Module">Outbound Funds Module</option>
+            <option value="Salesforce Platform">Salesforce Platform</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="feature">Feature (optional)</label>
+          <p class="hint" id="feature-hint">
+            The feature or area, in your own words.
+          </p>
+          <input
+            id="feature"
+            name="00NkP0000047WLr"
+            type="text"
+            maxlength="255"
+            aria-describedby="feature-hint"
+          />
+        </div>
+
+        <p>
+          If the team accepts your idea, your name may be shown with it. We do
+          not show your email address.
+        </p>
+
+        <button type="submit">Send request</button>
+      </form>
+    </main>
+  </body>
+</html>
