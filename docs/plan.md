@@ -4,13 +4,25 @@ What exists, what round 1 builds, what comes after, and what the team still has 
 
 ## Where things stand
 
-Nothing from this plan is built in the working org yet. The repository holds these documents and the project tooling.
+Round 1 is built in the working org as a prototype for the team to click through. The repository holds its components, the public request form, and scripts that assign access and create made-up sample data. Nobody on the team can use it yet, because the org has one login.
+
+Where the prototype differs from this plan, or has not been proved:
+
+- **The public form has not created a request.** Web-to-Case is on and accepts the form's posts, but the org created no case, and no error reached the org's logs. The cause is not known. Salesforce emails Web-to-Case failures to the Default Case Owner. Every step after the form was proved with requests created through the API.
+- **Requester emails come from flows, not email templates or an auto-response rule.** The six messages are text in the flows, and each email is logged on its request. Salesforce sends an email template only to a contact, lead, or person account, and a request has none. An auto-response rule needs a sending address in its definition, which would put an email address in this public repository.
+- **The New form for a request uses the profile's Case layout.** Assigning a layout to the Video Request record type is a profile change. The request record page does not depend on the layout.
+- **Team members submit ideas from the voting board.** Submit an idea files an Internal request in the triage queue.
+- **The org needs two Support Settings.** Salesforce requires a Default Case Owner and an Automated Case User before a Case assignment rule can exist.
+- **A vote belongs to an email address.** A qualified request without an email address casts no vote. A request typed with a team member's address turns that member's board vote into a request vote, which they cannot withdraw while the request stands. When a user's email address changes, their earlier board votes stay under the old address, so they can count twice until they withdraw one. Two users who share an address share one vote, and only the one who cast it can withdraw it. ADR 0009 replaces this for members in round 4.
+- **A user whose email address is longer than 80 characters cannot vote on the board.** The vote's email field holds 80 characters, and Salesforce will not widen it while votes exist, including deleted votes it has not yet purged. No user in the org has an address that long. If one appears before round 4, widen the field and the voter key together.
+- **Salesforce's integration users can read every vote.** The Slack and Analytics integration users hold View All Data, which covers every object. Nobody signs in as them. Check what the Slack integration can show before round 3.
+- **Not proved: voting as someone with no access to votes.** The voting board's service gives team members no direct access to votes and works in system mode for them. Its tests run as the org's only user, a System Administrator, so they cannot show the difference. The configuration is checked instead: apart from View All Data holders, only Team Leadership can read votes.
 
 The working org is a Nonprofit Cloud trial on Enterprise Edition. Three facts about it shape the plan:
 
 - It has one full Salesforce license, and that license is in use. Nobody else can be given an internal login until Salesforce adds seats. Round 1 can be built under one login. It cannot be used by the team.
 - The trial expires on 2026-12-11 unless Salesforce extends it.
-- Case already has two record types and six statuses that belong to Nonprofit Cloud. Person accounts are on. Generative AI is on. Web-to-Case is off.
+- Case already has two record types and six statuses that belong to Nonprofit Cloud. Person accounts are on. Generative AI is on. Web-to-Case was off until round 1 turned it on.
 
 An earlier design was prototyped in a Developer Edition org in November 2026 and then set aside. Its findings about how Case, votes, and the standard Ideas feature behave are recorded in the ADRs.
 
