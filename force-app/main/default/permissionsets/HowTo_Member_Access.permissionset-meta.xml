@@ -1,5 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>VotingBoardService</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description
   >How-To Videos: what every team member needs. Read and create requests, work on content (the Queue Manager creates it at triage), and vote through the voting board. No access to votes.</description>
     <fieldPermissions>
