@@ -241,7 +241,14 @@ describe("c-voting-board", () => {
     root(element)
       .querySelector("lightning-flow")
       .dispatchEvent(
-        new CustomEvent("statuschange", { detail: { status: "FINISHED" } })
+        new CustomEvent("statuschange", {
+          detail: {
+            status: "FINISHED",
+            outputVariables: [
+              { name: "RequestId", value: "500000000000001AAA" }
+            ]
+          }
+        })
       );
     await flush();
 
@@ -251,6 +258,28 @@ describe("c-voting-board", () => {
     );
     expect(root(element).activeElement).toBe(submitButton(element));
     expect(submitButton(element).getAttribute("aria-expanded")).toBe("false");
+  });
+
+  it("says the idea was not saved when the flow finishes without a request", async () => {
+    const element = await render();
+    submitButton(element).click();
+    await flush();
+
+    root(element)
+      .querySelector("lightning-flow")
+      .dispatchEvent(
+        new CustomEvent("statuschange", {
+          detail: {
+            status: "FINISHED",
+            outputVariables: [{ name: "RequestId", value: null }]
+          }
+        })
+      );
+    await flush();
+
+    expect(root(element).querySelector("lightning-flow")).toBeNull();
+    expect(announcement(element)).toBe("Your idea was not saved.");
+    expect(root(element).activeElement).toBe(submitButton(element));
   });
 
   it("closes the form without submitting and returns focus", async () => {

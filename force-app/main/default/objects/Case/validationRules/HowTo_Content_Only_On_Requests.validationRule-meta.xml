@@ -3,7 +3,7 @@
     <fullName>HowTo_Content_Only_On_Requests</fullName>
     <active>true</active>
     <description
-  >How-To Videos: only a Video Request can point to content. Keeps other Case record types out of Request Count and the qualified-if-linked rule, including a linked request whose record type is changed.</description>
+  >How-To Videos: only a Video Request can point to content. Keeps other Case record types out of the vote count and the qualified-if-linked rule, including a linked request whose record type is changed.</description>
     <errorConditionFormula
   >AND(NOT(ISBLANK(HowTo_Content__c)), RecordType.DeveloperName &lt;&gt; &quot;HowTo_Video_Request&quot;)</errorConditionFormula>
     <errorDisplayField>HowTo_Content__c</errorDisplayField>

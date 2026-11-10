@@ -1,5 +1,5 @@
 // Refuses files that would put a person's identity or the org's location into this public repository:
-// email addresses other than example.com, Salesforce instance URLs, dashboard owner or running-user fields,
+// email addresses outside example.com, Salesforce instance URLs, dashboard owner or running-user fields,
 // and the org ID anywhere except the public request form.
 // Usage: node scripts/check-public.mjs <file> [<file> ...]   (lint-staged passes the staged files)
 import { existsSync, readFileSync } from "node:fs";
@@ -7,7 +7,7 @@ import { relative } from "node:path";
 
 const FORM = "form/index.html";
 const rules = [
-  { name: "email address", pattern: /[A-Za-z0-9._%+-]+@(?!example\.com\b)[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g },
+  { name: "email address", pattern: /[A-Za-z0-9._%+-]+@(?!([A-Za-z0-9-]+\.)*example\.com\b)[A-Za-z0-9-]+(\.[A-Za-z0-9-]+)*\.[A-Za-z]{2,}/g },
   { name: "instance URL", pattern: /[A-Za-z0-9-]+\.(my\.salesforce\.com|lightning\.force\.com|my\.site\.com)/g },
   { name: "dashboard owner or running user", pattern: /<(owner|runningUser)\b/g },
   { name: "org ID", pattern: /\b00D[A-Za-z0-9]{12}([A-Za-z0-9]{3})?\b/g, allowIn: [FORM] }

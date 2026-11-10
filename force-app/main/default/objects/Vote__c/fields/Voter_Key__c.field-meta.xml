@@ -3,7 +3,7 @@
     <fullName>Voter_Key__c</fullName>
     <caseSensitive>false</caseSensitive>
     <description
-  >The 18-character content ID followed by the voter&apos;s email address in lower case. Required and unique, so the database refuses a second vote by one person on one content record, whether they asked or voted. A validation rule rejects any other key. Writers upsert on this key (ADR 0003).</description>
+  >The 18-character content ID followed by the voter&apos;s email address in lower case, up to 98 characters. Required and unique, so the database refuses a second vote by one person on one content record, whether they asked or voted. A validation rule rejects any other key. Writers look the key up before inserting and treat a duplicate-key refusal as already counted (ADR 0003).</description>
     <externalId>true</externalId>
     <label>Voter Key</label>
     <length>100</length>

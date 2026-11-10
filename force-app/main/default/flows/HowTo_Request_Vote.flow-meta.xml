@@ -4,10 +4,10 @@
     <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <customErrors>
         <description
-    >The count must match the requests, so a failure stops the triage and shows why.</description>
+    >The count must match the requests, so a failure stops the save and shows why.</description>
         <name>Vote_failed</name>
         <label>Vote failed</label>
-        <locationX>900</locationX>
+        <locationX>1100</locationX>
         <locationY>500</locationY>
         <customErrorMessages>
             <errorMessage
@@ -16,10 +16,95 @@
         </customErrorMessages>
     </customErrors>
     <decisions>
+        <name>Already_released</name>
+        <label>Already released?</label>
+        <locationX>800</locationX>
+        <locationY>540</locationY>
+        <defaultConnector>
+            <targetReference>Vote_failed</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Gone</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>Get_the_old_vote_again</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>true</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Is_it_linked_to_open_content</targetReference>
+            </connector>
+            <label>Gone</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Another_request_still_asks</name>
+        <label>Another request still asks?</label>
+        <locationX>500</locationX>
+        <locationY>300</locationY>
+        <defaultConnector>
+            <targetReference>Was_it_a_board_vote</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Yes_keep_it</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference
+        >Get_another_request_from_the_old_address</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Is_it_linked_to_open_content</targetReference>
+            </connector>
+            <label>Yes, keep the vote</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Did_it_hold_a_vote_before</name>
+        <label>Did it hold a vote before?</label>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <defaultConnector>
+            <targetReference>Is_it_linked_to_open_content</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Linked_with_an_address</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference
+        >$Record__Prior.HowTo_Content__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference
+        >$Record__Prior.SuppliedEmail</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Get_the_old_vote</targetReference>
+            </connector>
+            <label>Linked with an address</label>
+        </rules>
+    </decisions>
+    <decisions>
         <name>Has_this_person_voted</name>
         <label>Has this person voted?</label>
         <locationX>176</locationX>
-        <locationY>700</locationY>
+        <locationY>760</locationY>
         <defaultConnector>
             <targetReference>Cast_the_vote</targetReference>
         </defaultConnector>
@@ -44,7 +129,7 @@
         <name>Is_it_linked_to_open_content</name>
         <label>Is it linked to open content?</label>
         <locationX>176</locationX>
-        <locationY>500</locationY>
+        <locationY>560</locationY>
         <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
             <name>Open_content</name>
@@ -52,6 +137,13 @@
             <conditions>
                 <leftValueReference
         >$Record.HowTo_Content__c</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <conditions>
+                <leftValueReference>$Record.SuppliedEmail</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
                     <booleanValue>false</booleanValue>
@@ -88,17 +180,16 @@
         </rules>
     </decisions>
     <decisions>
-        <name>Remove_the_old_vote</name>
-        <label>Remove the old vote?</label>
-        <locationX>400</locationX>
-        <locationY>300</locationY>
+        <name>Is_there_an_old_vote</name>
+        <label>Is there an old vote?</label>
+        <locationX>500</locationX>
+        <locationY>100</locationY>
         <defaultConnector>
             <targetReference>Is_it_linked_to_open_content</targetReference>
         </defaultConnector>
-        <defaultConnectorLabel
-    >No: none, or another request still asks</defaultConnectorLabel>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
         <rules>
-            <name>Remove_it</name>
+            <name>Old_vote</name>
             <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference>Get_the_old_vote</leftValueReference>
@@ -107,25 +198,44 @@
                     <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
+            <connector>
+                <targetReference
+        >Get_another_request_from_the_old_address</targetReference>
+            </connector>
+            <label>Old vote</label>
+        </rules>
+    </decisions>
+    <decisions>
+        <name>Was_it_a_board_vote</name>
+        <label>Was it a board vote?</label>
+        <locationX>500</locationX>
+        <locationY>420</locationY>
+        <defaultConnector>
+            <targetReference>Delete_the_old_vote</targetReference>
+        </defaultConnector>
+        <defaultConnectorLabel>No</defaultConnectorLabel>
+        <rules>
+            <name>Board_vote</name>
+            <conditionLogic>and</conditionLogic>
             <conditions>
                 <leftValueReference
-        >Get_another_request_from_this_address</leftValueReference>
+        >Get_the_old_vote.Voter__c</leftValueReference>
                 <operator>IsNull</operator>
                 <rightValue>
-                    <booleanValue>true</booleanValue>
+                    <booleanValue>false</booleanValue>
                 </rightValue>
             </conditions>
             <connector>
-                <targetReference>Delete_the_old_vote</targetReference>
+                <targetReference>Give_it_back_to_the_board</targetReference>
             </connector>
-            <label>Remove it</label>
+            <label>Board vote</label>
         </rules>
     </decisions>
     <decisions>
         <name>Was_it_counted_already</name>
         <label>Was it counted already?</label>
         <locationX>400</locationX>
-        <locationY>920</locationY>
+        <locationY>900</locationY>
         <defaultConnector>
             <targetReference>Vote_failed</targetReference>
         </defaultConnector>
@@ -147,34 +257,8 @@
             <label>Counted</label>
         </rules>
     </decisions>
-    <decisions>
-        <name>Was_it_linked_before</name>
-        <label>Was it linked before?</label>
-        <locationX>176</locationX>
-        <locationY>100</locationY>
-        <defaultConnector>
-            <targetReference>Is_it_linked_to_open_content</targetReference>
-        </defaultConnector>
-        <defaultConnectorLabel>No</defaultConnectorLabel>
-        <rules>
-            <name>Linked_before</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference
-        >$Record__Prior.HowTo_Content__c</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Get_the_old_vote</targetReference>
-            </connector>
-            <label>Linked before</label>
-        </rules>
-    </decisions>
     <description
-  >How-To Videos: a qualified request counts as a vote for its requester (ADR 0003). When a Video Request is linked to content that is open for votes, casts a vote keyed on the content and the requester&apos;s email in lower case (when two requests from one address arrive together, the unique key refuses the second, which then counts as already cast); if that person already voted on the board, marks the vote as from the request instead, so it cannot be withdrawn while the request stands. When the request is relinked or unlinked, removes the vote it cast unless another request from the same address still points to the old content. Declined, Published and Retired content get no new vote. Runs in system context: team members hold no access to votes.</description>
+  >How-To Videos: a qualified request counts as a vote for its requester (ADR 0003). When a Video Request&apos;s content or email changes, releases the vote it held for its old content and address (it stays if another request from that address still points there; a board vote that the request took over goes back to the board), then casts a vote keyed on the new content and the email in lower case, if that content is open for votes. If the person already voted on the board, that vote becomes the request&apos;s, so it cannot be withdrawn while the request stands. Two requests from one address saved together count once: the unique key refuses the second. Declined, Published and Retired content get no new vote. Runs in system context: team members hold no access to votes.</description>
     <environments>Default</environments>
     <formulas>
         <name>Email_lowercase</name>
@@ -191,7 +275,7 @@
         <name>Old_key</name>
         <dataType>String</dataType>
         <expression
-    >{!$Record__Prior.HowTo_Content__c} &amp; LOWER({!$Record.SuppliedEmail})</expression>
+    >{!$Record__Prior.HowTo_Content__c} &amp; LOWER({!$Record__Prior.SuppliedEmail})</expression>
     </formulas>
     <interviewLabel
   >How-To request vote {!$Flow.CurrentDateTime}</interviewLabel>
@@ -219,7 +303,7 @@
         <name>Cast_the_vote</name>
         <label>Cast the vote</label>
         <locationX>176</locationX>
-        <locationY>820</locationY>
+        <locationY>880</locationY>
         <faultConnector>
             <targetReference>Get_the_vote_after_a_clash</targetReference>
         </faultConnector>
@@ -251,23 +335,33 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
     <recordDeletes>
+        <description
+    >If two requests from one address release this vote in one save, the second delete fails and the fault path finds it gone.</description>
         <name>Delete_the_old_vote</name>
         <label>Delete the old vote</label>
-        <locationX>400</locationX>
-        <locationY>400</locationY>
+        <locationX>500</locationX>
+        <locationY>540</locationY>
         <connector>
             <targetReference>Is_it_linked_to_open_content</targetReference>
         </connector>
         <faultConnector>
-            <targetReference>Vote_failed</targetReference>
+            <targetReference>Get_the_old_vote_again</targetReference>
         </faultConnector>
-        <inputReference>Get_the_old_vote</inputReference>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Voter_Key__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Old_key</elementReference>
+            </value>
+        </filters>
+        <object>Vote__c</object>
     </recordDeletes>
     <recordLookups>
         <name>Get_an_existing_vote</name>
         <label>Get an existing vote</label>
         <locationX>176</locationX>
-        <locationY>600</locationY>
+        <locationY>660</locationY>
         <assignNullValuesIfNoRecordsFound
     >true</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -291,14 +385,14 @@
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
-        <name>Get_another_request_from_this_address</name>
-        <label>Get another request from this address</label>
-        <locationX>400</locationX>
+        <name>Get_another_request_from_the_old_address</name>
+        <label>Get another request from the old address</label>
+        <locationX>500</locationX>
         <locationY>200</locationY>
         <assignNullValuesIfNoRecordsFound
     >true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference>Remove_the_old_vote</targetReference>
+            <targetReference>Another_request_still_asks</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Vote_failed</targetReference>
@@ -316,7 +410,8 @@
             <field>SuppliedEmail</field>
             <operator>EqualTo</operator>
             <value>
-                <elementReference>$Record.SuppliedEmail</elementReference>
+                <elementReference
+        >$Record__Prior.SuppliedEmail</elementReference>
             </value>
         </filters>
         <filters>
@@ -334,13 +429,12 @@
     <recordLookups>
         <name>Get_the_old_vote</name>
         <label>Get the old vote</label>
-        <locationX>400</locationX>
-        <locationY>100</locationY>
+        <locationX>500</locationX>
+        <locationY>0</locationY>
         <assignNullValuesIfNoRecordsFound
     >true</assignNullValuesIfNoRecordsFound>
         <connector>
-            <targetReference
-      >Get_another_request_from_this_address</targetReference>
+            <targetReference>Is_there_an_old_vote</targetReference>
         </connector>
         <faultConnector>
             <targetReference>Vote_failed</targetReference>
@@ -363,13 +457,40 @@
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Vote__c</object>
         <queriedFields>Id</queriedFields>
+        <queriedFields>Voter__c</queriedFields>
+        <storeOutputAutomatically>true</storeOutputAutomatically>
+    </recordLookups>
+    <recordLookups>
+        <name>Get_the_old_vote_again</name>
+        <label>Get the old vote again</label>
+        <locationX>800</locationX>
+        <locationY>440</locationY>
+        <assignNullValuesIfNoRecordsFound
+    >true</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Already_released</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Vote_failed</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Voter_Key__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Old_key</elementReference>
+            </value>
+        </filters>
+        <getFirstRecordOnly>true</getFirstRecordOnly>
+        <object>Vote__c</object>
+        <queriedFields>Id</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
     <recordLookups>
         <name>Get_the_vote_after_a_clash</name>
         <label>Get the vote after a clash</label>
         <locationX>400</locationX>
-        <locationY>820</locationY>
+        <locationY>800</locationY>
         <assignNullValuesIfNoRecordsFound
     >true</assignNullValuesIfNoRecordsFound>
         <connector>
@@ -389,14 +510,40 @@
         <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Vote__c</object>
         <queriedFields>Id</queriedFields>
-        <queriedFields>Source__c</queriedFields>
         <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordLookups>
+    <recordUpdates>
+        <name>Give_it_back_to_the_board</name>
+        <label>Give it back to the board</label>
+        <locationX>700</locationX>
+        <locationY>420</locationY>
+        <connector>
+            <targetReference>Is_it_linked_to_open_content</targetReference>
+        </connector>
+        <faultConnector>
+            <targetReference>Vote_failed</targetReference>
+        </faultConnector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Voter_Key__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>Old_key</elementReference>
+            </value>
+        </filters>
+        <inputAssignments>
+            <field>Source__c</field>
+            <value>
+                <stringValue>Voting Board</stringValue>
+            </value>
+        </inputAssignments>
+        <object>Vote__c</object>
+    </recordUpdates>
     <recordUpdates>
         <name>Mark_it_as_from_the_request</name>
         <label>Mark it as from the request</label>
         <locationX>400</locationX>
-        <locationY>700</locationY>
+        <locationY>760</locationY>
         <faultConnector>
             <targetReference>Vote_failed</targetReference>
         </faultConnector>
@@ -420,10 +567,10 @@
         <locationX>50</locationX>
         <locationY>0</locationY>
         <connector>
-            <targetReference>Was_it_linked_before</targetReference>
+            <targetReference>Did_it_hold_a_vote_before</targetReference>
         </connector>
         <filterFormula
-    >AND({!$Record.RecordType.DeveloperName} = &quot;HowTo_Video_Request&quot;, NOT(ISBLANK({!$Record.SuppliedEmail})), OR(AND(ISNEW(), NOT(ISBLANK({!$Record.HowTo_Content__c}))), ISCHANGED({!$Record.HowTo_Content__c})))</filterFormula>
+    >AND({!$Record.RecordType.DeveloperName} = &quot;HowTo_Video_Request&quot;, OR(AND(ISNEW(), NOT(ISBLANK({!$Record.HowTo_Content__c})), NOT(ISBLANK({!$Record.SuppliedEmail}))), ISCHANGED({!$Record.HowTo_Content__c}), ISCHANGED({!$Record.SuppliedEmail})))</filterFormula>
         <object>Case</object>
         <recordTriggerType>CreateAndUpdate</recordTriggerType>
         <triggerType>RecordAfterSave</triggerType>

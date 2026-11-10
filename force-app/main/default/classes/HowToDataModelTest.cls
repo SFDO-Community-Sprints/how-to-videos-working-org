@@ -1,6 +1,6 @@
 /**
  * Proves the round 1 data model: the Video Request rules on Case, the status rules on content,
- * the vote key, the vote and request counts, the delete restriction, and which permission set grants what.
+ * the vote key, votes cast by qualified requests (ADR 0003), the delete restriction, and which permission set grants what.
  * Rule tests run as the deploying user with system-mode DML, so they prove the rules, not record access.
  * Tests that need Team Leadership's custom permission grant or remove it, then act inside System.runAs
  * so the change takes effect. Nothing depends on the user's real assignments.
@@ -300,18 +300,80 @@ private class HowToDataModelTest {
   }
 
   @IsTest
-  static void aRequestLinkedToPublishedContentCastsNoVote() {
+  static void aRequestLinkedToClosedContentCastsNoVote() {
     grantDecideIdeas();
-    HowToContent__c c = content('Send a donation receipt');
-    System.runAs(me()) {
-      c.Status__c = 'Published';
+    List<HowToContent__c> closed = new List<HowToContent__c>();
+    for (
+      String status : new List<String>{ 'Declined', 'Published', 'Retired' }
+    ) {
+      HowToContent__c c = content(status + ' content');
+      c.Status__c = status;
       c.Published_Date__c = Date.today();
-      insert as system c;
+      c.Team_Response__c = 'Out of scope for the series.';
+      closed.add(c);
     }
-    Assert.isNull(
-      insertError(linkedRequest(c, 'first@example.com')),
-      'triage to published content still works'
+    System.runAs(me()) {
+      insert as system closed;
+    }
+    for (HowToContent__c c : closed) {
+      Assert.isNull(
+        insertError(linkedRequest(c, 'first@example.com')),
+        'triage to ' + c.Name + ' still works'
+      );
+      Assert.areEqual(0, voteCount(c), c.Name);
+    }
+  }
+
+  @IsTest
+  static void changingTheRequesterEmailMovesTheVote() {
+    HowToContent__c c = content('Recurring donations');
+    insert as system c;
+    Case r = linkedRequest(c, 'old@example.com');
+    insert as system r;
+    r.SuppliedEmail = 'new@example.com';
+    update as system r;
+    List<Vote__c> votes = votesOn(c);
+    Assert.areEqual(1, votes.size());
+    Assert.areEqual('new@example.com', votes[0].Voter_Email__c);
+
+    r.SuppliedEmail = null;
+    update as system r;
+    Assert.areEqual(
+      0,
+      voteCount(c),
+      'a request without an address holds no vote'
     );
+  }
+
+  @IsTest
+  static void unlinkingTwoRequestsFromOneAddressInOneSaveReleasesTheVoteOnce() {
+    HowToContent__c c = content('Recurring donations');
+    insert as system c;
+    Case one = linkedRequest(c, 'first@example.com');
+    Case two = linkedRequest(c, 'first@example.com');
+    insert as system new List<Case>{ one, two };
+    for (Case r : new List<Case>{ one, two }) {
+      r.HowTo_Content__c = null;
+      r.Status = 'New';
+    }
+    update as system new List<Case>{ one, two };
+    Assert.areEqual(0, voteCount(c));
+  }
+
+  @IsTest
+  static void deletingARequestReleasesItsVote() {
+    HowToContent__c c = content('Recurring donations');
+    insert as system c;
+    Case one = linkedRequest(c, 'first@example.com');
+    Case two = linkedRequest(c, 'FIRST@example.com');
+    insert as system new List<Case>{ one, two };
+    delete as system one;
+    Assert.areEqual(
+      1,
+      voteCount(c),
+      'the other request from that address still asks'
+    );
+    delete as system two;
     Assert.areEqual(0, voteCount(c));
   }
 
@@ -587,6 +649,22 @@ private class HowToDataModelTest {
   }
 
   @IsTest
+  static void theLongestEmailFitsTheVote() {
+    HowToContent__c c = content('Recurring donations');
+    insert as system c;
+    String email = 'a'.repeat(64) + '@' + 'b'.repeat(3) + '.example.com';
+    Assert.areEqual(80, email.length(), 'the longest email the field holds');
+    Vote__c v = new Vote__c(
+      Content__c = c.Id,
+      Voter_Email__c = email,
+      Voter_Key__c = String.valueOf(c.Id) + email,
+      Source__c = 'Request'
+    );
+    Assert.isNull(insertError(v));
+    Assert.areEqual(1, voteCount(c));
+  }
+
+  @IsTest
   static void withdrawingAVoteLowersTheCount() {
     HowToContent__c c = content('Recurring donations');
     insert as system c;
@@ -678,6 +756,25 @@ private class HowToDataModelTest {
             AND Parent.Name IN :OUR_SETS
         ]
       )
+    );
+  }
+
+  @IsTest
+  static void outsideViewAllDataOnlyTeamLeadershipReadsVotes() {
+    Set<String> readers = new Set<String>();
+    for (ObjectPermissions p : [
+      SELECT Parent.Name
+      FROM ObjectPermissions
+      WHERE
+        SobjectType = 'Vote__c'
+        AND PermissionsRead = TRUE
+        AND Parent.PermissionsViewAllData = FALSE
+    ]) {
+      readers.add(p.Parent.Name);
+    }
+    Assert.areEqual(
+      new Set<String>{ 'HowTo_Leadership_Access', 'HowTo_Team_Leadership' },
+      readers
     );
   }
 

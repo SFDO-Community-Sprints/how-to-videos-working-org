@@ -101,9 +101,7 @@
     </fieldPermissions>
     <flowAccesses>
         <enabled>true</enabled>
-        <flow>
-HowTo_Submit_Idea;
-    </flow>
+        <flow>HowTo_Submit_Idea</flow>
     </flowAccesses>
     <hasActivationRequired>false</hasActivationRequired>
     <label>How-To Team Member Access</label>

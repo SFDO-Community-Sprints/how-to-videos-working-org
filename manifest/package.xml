@@ -85,6 +85,7 @@
         <members>HowTo_Request_Received_Email</members>
         <members>HowTo_Request_Triage_Email</members>
         <members>HowTo_Request_Vote</members>
+        <members>HowTo_Request_Vote_On_Delete</members>
         <members>HowTo_Submit_Idea</members>
         <name>Flow</name>
     </types>

@@ -49,6 +49,7 @@
         <label>Create the request</label>
         <locationX>176</locationX>
         <locationY>500</locationY>
+        <assignRecordIdToReference>RequestId</assignRecordIdToReference>
         <connector>
             <targetReference>Thank_you</targetReference>
         </connector>
@@ -122,7 +123,6 @@
             </value>
         </inputAssignments>
         <object>Case</object>
-        <storeOutputAutomatically>true</storeOutputAutomatically>
     </recordCreates>
     <recordLookups>
         <name>Get_the_record_type</name>
@@ -306,6 +306,7 @@
                 </width>
             </styleProperties>
         </fields>
+        <nextOrFinishButtonLabel>Close</nextOrFinishButtonLabel>
         <showFooter>true</showFooter>
         <showHeader>false</showHeader>
     </screens>
@@ -342,4 +343,13 @@
         </connector>
     </start>
     <status>Active</status>
+    <variables>
+        <description
+    >The request this run created. Empty when it failed, so the voting board announces success only when it is set.</description>
+        <name>RequestId</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>true</isOutput>
+    </variables>
 </Flow>

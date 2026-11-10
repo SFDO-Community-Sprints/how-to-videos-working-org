@@ -51,14 +51,20 @@ export default class VotingBoard extends LightningElement {
   }
 
   handleFlowStatus(event) {
-    if (
-      event.detail.status === "FINISHED" ||
-      event.detail.status === "FINISHED_SCREEN"
-    ) {
-      this.submitting = false;
-      this.focusAfterRender = "submitButton";
-      this.announce("Your idea was sent to the Triage Queue.");
+    const { status, outputVariables } = event.detail;
+    if (status !== "FINISHED" && status !== "FINISHED_SCREEN") {
+      return;
     }
+    const requestId = (outputVariables || []).find(
+      (v) => v.name === "RequestId"
+    )?.value;
+    this.submitting = false;
+    this.focusAfterRender = "submitButton";
+    this.announce(
+      requestId
+        ? "Your idea was sent to the Triage Queue."
+        : "Your idea was not saved."
+    );
   }
 
   get hasIdeas() {

@@ -2,6 +2,11 @@
  * Calls VotingBoardService the way the voting board component does, as a team member,
  * and checks the totals and the stored votes. Requests are saved through the real triage flow,
  * which casts a vote for their requester (ADR 0003).
+ *
+ * Not proved here: that a person with no access to Vote__c can vote. The org has one licensed user, a System
+ * Administrator, who can read and write votes anyway, and the owner has not allowed creating other users, even
+ * in tests. These tests would still pass if the service's system-mode access were removed. HowToDataModelTest
+ * checks the configuration instead: outside View All Data holders, only Team Leadership can read votes.
  */
 @IsTest
 private class VotingBoardServiceTest {
@@ -208,6 +213,62 @@ private class VotingBoardServiceTest {
     System.runAs(me()) {
       Assert.areEqual(VotingBoardService.FROM_REQUEST, errorFrom(c.Id, false));
     }
+  }
+
+  @IsTest
+  static void unlinkingTheRequestGivesTheVoteBackToTheBoard() {
+    asTeamMember();
+    HowToContent__c c = idea('Recurring donations');
+    insert as system c;
+    System.runAs(me()) {
+      VotingBoardService.castVote(c.Id);
+    }
+    Case mine = myRequestFor(c);
+    insert as system mine;
+    mine.HowTo_Content__c = null;
+    mine.Status = 'New';
+    update as system mine;
+
+    List<Vote__c> votes = storedVotes(c.Id);
+    Assert.areEqual(1, votes.size(), 'the person still voted on the board');
+    Assert.areEqual('Voting Board', votes[0].Source__c);
+    System.runAs(me()) {
+      Assert.areEqual(
+        0,
+        VotingBoardService.withdrawVote(c.Id).votes,
+        'and can withdraw it again'
+      );
+    }
+  }
+
+  @IsTest
+  static void aBoardVoteCastBySomeoneElseWithMyEmailCannotBeWithdrawn() {
+    asTeamMember();
+    HowToContent__c c = idea('Recurring donations');
+    insert as system c;
+    Id someoneElse = [
+      SELECT Id
+      FROM User
+      WHERE Id != :UserInfo.getUserId()
+      LIMIT 1
+    ]
+    .Id;
+    insert as system new Vote__c(
+      Content__c = c.Id,
+      Voter__c = someoneElse,
+      Voter_Email__c = UserInfo.getUserEmail().toLowerCase(),
+      Voter_Key__c = myKey(c.Id),
+      Source__c = 'Voting Board'
+    );
+    System.runAs(me()) {
+      Assert.areEqual(VotingBoardService.SOMEONE_ELSES, errorFrom(c.Id, false));
+      Assert.areEqual(
+        1,
+        VotingBoardService.castVote(c.Id).votes,
+        'the shared address already counts once'
+      );
+    }
+    Assert.areEqual(1, storedVotes(c.Id).size());
   }
 
   @IsTest
